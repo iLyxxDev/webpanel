@@ -65,27 +65,29 @@
             font-weight: 700;
         }
         
-        /* Login Form */
-        .login-container {
+        /* Auth Container */
+        .auth-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             background: linear-gradient(rgba(60, 110, 113, 0.8), rgba(40, 75, 99, 0.9)), url('https://images.unsplash.com/photo-1627398242454-45a1465c2479?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
             background-size: cover;
             background-position: center;
+            padding: 2rem 0;
         }
         
-        .login-form {
+        .auth-form {
             background: white;
             padding: 2.5rem;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 450px;
+            margin: 1rem;
         }
         
-        .login-form h2 {
+        .auth-form h2 {
             text-align: center;
             margin-bottom: 1.5rem;
             color: var(--secondary);
@@ -126,6 +128,24 @@
         .btn:hover {
             background-color: var(--secondary);
             transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .auth-switch {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
         }
         
         /* Dashboard Styles */
@@ -270,10 +290,11 @@
     </style>
 </head>
 <body>
-    <!-- Login Form -->
-    <div class="login-container" id="loginSection">
-        <form class="login-form" id="loginForm">
-            <h2><i class="fas fa-dragon"></i> Panel Pterodactyl</h2>
+    <!-- Auth Container -->
+    <div class="auth-container" id="authSection">
+        <!-- Login Form -->
+        <form class="auth-form" id="loginForm">
+            <h2><i class="fas fa-dragon"></i> Login Panel</h2>
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" placeholder="Masukkan username" required>
@@ -283,9 +304,34 @@
                 <input type="password" id="password" placeholder="Masukkan password" required>
             </div>
             <button type="submit" class="btn">Login</button>
-            <p style="margin-top: 1rem; text-align: center;">
-                Belum punya akun? <a href="#" style="color: var(--primary);">Hubungi Administrator</a>
-            </p>
+            <div class="auth-switch">
+                <p>Belum punya akun? <a href="#" id="showRegister">Daftar di sini</a></p>
+            </div>
+        </form>
+
+        <!-- Register Form -->
+        <form class="auth-form" id="registerForm" style="display: none;">
+            <h2><i class="fas fa-dragon"></i> Daftar Akun Baru</h2>
+            <div class="form-group">
+                <label for="regUsername">Username</label>
+                <input type="text" id="regUsername" placeholder="Buat username" required>
+            </div>
+            <div class="form-group">
+                <label for="regEmail">Email</label>
+                <input type="email" id="regEmail" placeholder="Masukkan email" required>
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Password</label>
+                <input type="password" id="regPassword" placeholder="Buat password" required>
+            </div>
+            <div class="form-group">
+                <label for="regConfirmPassword">Konfirmasi Password</label>
+                <input type="password" id="regConfirmPassword" placeholder="Konfirmasi password" required>
+            </div>
+            <button type="submit" class="btn">Daftar</button>
+            <div class="auth-switch">
+                <p>Sudah punya akun? <a href="#" id="showLogin">Login di sini</a></p>
+            </div>
         </form>
     </div>
 
@@ -403,6 +449,19 @@
     </div>
 
     <script>
+        // Toggle antara form login dan register
+        document.getElementById('showRegister').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        });
+        
+        document.getElementById('showLogin').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        });
+        
         // Simulasi login
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -410,23 +469,71 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            // Simulasi autentikasi (dalam implementasi nyata, ini akan berkomunikasi dengan backend)
+            // Simulasi autentikasi
             if (username && password) {
-                // Simpan informasi user (dalam implementasi nyata, gunakan session atau token)
-                document.getElementById('userName').textContent = username;
+                // Cek apakah user ada di localStorage
+                const users = JSON.parse(localStorage.getItem('pterodactylUsers')) || [];
+                const user = users.find(u => u.username === username && u.password === password);
                 
-                // Tampilkan dashboard, sembunyikan form login
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('dashboardSection').style.display = 'block';
+                if (user) {
+                    document.getElementById('userName').textContent = user.username;
+                    
+                    // Tampilkan dashboard, sembunyikan form login
+                    document.getElementById('authSection').style.display = 'none';
+                    document.getElementById('dashboardSection').style.display = 'block';
+                } else {
+                    alert('Username atau password salah!');
+                }
             } else {
                 alert('Username dan password harus diisi!');
             }
         });
         
+        // Simulasi pendaftaran
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Password dan konfirmasi password tidak cocok!');
+                return;
+            }
+            
+            // Simpan user ke localStorage
+            const users = JSON.parse(localStorage.getItem('pterodactylUsers')) || [];
+            
+            // Cek apakah username sudah ada
+            if (users.some(user => user.username === username)) {
+                alert('Username sudah digunakan!');
+                return;
+            }
+            
+            // Tambahkan user baru
+            users.push({
+                username,
+                email,
+                password
+            });
+            
+            localStorage.setItem('pterodactylUsers', JSON.stringify(users));
+            
+            // Simpan ke GitHub (dijelaskan di bagian terpisah)
+            saveUserToGitHub(username, email, password);
+            
+            alert('Pendaftaran berhasil! Silakan login.');
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').reset();
+        });
+        
         // Logout functionality
         document.getElementById('logoutBtn').addEventListener('click', function() {
             // Kembali ke halaman login
-            document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('authSection').style.display = 'flex';
             document.getElementById('dashboardSection').style.display = 'none';
             
             // Reset form
@@ -437,6 +544,18 @@
         document.getElementById('addServerBtn').addEventListener('click', function() {
             alert('Fitur tambah server akan dibuka. Dalam implementasi nyata, ini akan membuka form untuk menambahkan server baru.');
         });
+        
+        // Fungsi untuk menyimpan user ke GitHub
+        function saveUserToGitHub(username, email, password) {
+            // Dalam implementasi nyata, ini akan mengirim data ke backend
+            // yang kemudian akan menyimpannya ke repository GitHub
+            console.log('Menyimpan user ke GitHub:', { username, email, password });
+            
+            // Contoh implementasi dengan GitHub API akan memerlukan:
+            // 1. Token akses personal GitHub
+            // 2. Nama repository
+            // 3. API call untuk menambahkan atau mengupdate file
+        }
     </script>
 </body>
 </html>
