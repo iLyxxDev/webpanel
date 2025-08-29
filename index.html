@@ -398,53 +398,102 @@
     </footer>
 
     <script>
-        document.getElementById('serverForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            // Ambil nilai dari form
-            const domain = document.getElementById('domain').value;
-            const ptla = document.getElementById('ptla').value;
-            const egg = document.getElementById('egg').value;
-            const loc = document.getElementById('loc').value;
-            const username = document.getElementById('username').value;
-            const targetId = document.getElementById('targetId').value;
-            
-            // Validasi sederhana
-            if (!domain || !ptla || !egg || !loc || !username || !targetId) {
-                showAlert('Semua field harus diisi!', 'danger');
-                return;
-            }
-            
-            // Tampilkan loading
-            document.getElementById('loading').classList.remove('hidden');
-            
-            try {
-                // Panggil fungsi handleUnli (simulasi)
-                const result = await handleUnli({ domain, ptla, egg, loc, username, targetId });
-                
-                // Tampilkan hasil
-                document.getElementById('result-name').textContent = result.name;
-                document.getElementById('result-email').textContent = result.email;
-                document.getElementById('result-userid').textContent = result.userId;
-                document.getElementById('result-username').textContent = result.username;
-                document.getElementById('result-password').textContent = result.password;
-                document.getElementById('result-url').textContent = result.url;
-                
-                // Tampilkan container hasil
-                document.getElementById('resultContainer').style.display = 'block';
-                
-                // Scroll ke hasil
-                document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
-                
-                showAlert('Server berhasil dibuat! Informasi telah dikirim ke ID Telegram tujuan.', 'success');
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'danger');
-            } finally {
-                // Sembunyikan loading
-                document.getElementById('loading').classList.add('hidden');
-            }
-        });
+        // Fungsi untuk mengatur nilai konfigurasi
+function setConfig(eggId, locationId) {
+    document.getElementById('egg').value = eggId;
+    document.getElementById('loc').value = locationId;
+}
+
+// Modifikasi fungsi handleUnli
+async function handleUnli({ domain, username, targetId }) {
+    // Ambil nilai dari hidden fields
+    const ptla = document.getElementById('ptla').value;
+    const egg = document.getElementById('egg').value;
+    const loc = document.getElementById('loc').value;
+    
+    // Validasi input
+    if (!domain || !ptla) {
+        throw new Error("Domain/API Token belum disetting");
+    }
+    
+    if (!egg || !loc) {
+        throw new Error("Egg atau Location ID tidak dikonfigurasi");
+    }
+    
+    if (!username || !targetId) {
+        throw new Error("Username atau ID Telegram kosong!");
+    }
+    
+    // Simulasi delay jaringan
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Generate data acak untuk simulasi
+    const email = `${username}@unli.nael`;
+    const password = username + Math.random().toString(36).substring(2, 6);
+    const name = `${username} Server`;
+    const userId = Math.random().toString(36).substring(2, 10);
+    
+    // Simulasi 10% kemungkinan error
+    if (Math.random() < 0.1) {
+        throw new Error("Gagal membuat user: username sudah digunakan");
+    }
+    
+    // Hasil simulasi berhasil
+    return {
+        name,
+        email,
+        userId,
+        username,
+        password,
+        url: domain
+    };
+}
+
+// Modifikasi event listener form submit
+document.getElementById('serverForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Ambil nilai dari form (hanya domain, username, dan targetId yang diinput user)
+    const domain = document.getElementById('domain').value;
+    const username = document.getElementById('username').value;
+    const targetId = document.getElementById('targetId').value;
+    
+    // Validasi sederhana
+    if (!domain || !username || !targetId) {
+        showAlert('Semua field harus diisi!', 'danger');
+        return;
+    }
+    
+    // Tampilkan loading
+    document.getElementById('loading').classList.remove('hidden');
+    
+    try {
+        // Panggil fungsi handleUnli dengan parameter yang diperlukan
+        const result = await handleUnli({ domain, username, targetId });
         
+        // Tampilkan hasil
+        document.getElementById('result-name').textContent = result.name;
+        document.getElementById('result-email').textContent = result.email;
+        document.getElementById('result-userid').textContent = result.userId;
+        document.getElementById('result-username').textContent = result.username;
+        document.getElementById('result-password').textContent = result.password;
+        document.getElementById('result-url').textContent = result.url;
+        
+        // Tampilkan container hasil
+        document.getElementById('resultContainer').style.display = 'block';
+        
+        // Scroll ke hasil
+        document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
+        
+        showAlert('Server berhasil dibuat! Informasi telah dikirim ke ID Telegram tujuan.', 'success');
+    } catch (error) {
+        showAlert(`Error: ${error.message}`, 'danger');
+    } finally {
+        // Sembunyikan loading
+        document.getElementById('loading').classList.add('hidden');
+    }
+});
+
         function showAlert(message, type) {
             const alertBox = document.getElementById('alertBox');
             alertBox.innerHTML = `
@@ -458,47 +507,7 @@
             setTimeout(() => {
                 alertBox.innerHTML = '';
             }, 5000);
-        }
-        
-        // Fungsi handleUnli yang dimodifikasi untuk lingkungan browser
-        async function handleUnli({ domain, ptla, egg, loc, username, targetId }) {
-            // Validasi input
-            if (!domain || !ptla) {
-                throw new Error("Domain/API Token belum disetting");
-            }
-            
-            if (!egg || !loc) {
-                throw new Error("Egg atau Location ID tidak dikonfigurasi");
-            }
-            
-            if (!username || !targetId) {
-                throw new Error("Username atau ID Telegram kosong!");
-            }
-            
-            // Simulasi delay jaringan
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            // Generate data acak untuk simulasi
-            const email = `${username}@unli.nael`;
-            const password = username + Math.random().toString(36).substring(2, 6);
-            const name = `${username} Server`;
-            const userId = Math.random().toString(36).substring(2, 10);
-            
-            // Simulasi 10% kemungkinan error
-            if (Math.random() < 0.1) {
-                throw new Error("Gagal membuat user: username sudah digunakan");
-            }
-            
-            // Hasil simulasi berhasil
-            return {
-                name,
-                email,
-                userId,
-                username,
-                password,
-                url: domain
-            };
-        }
+        }     
     </script>
 </body>
 </html>
