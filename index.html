@@ -507,7 +507,12 @@ document.getElementById('serverForm').addEventListener('submit', async function(
     
     try {
         // Panggil fungsi handleUnli dengan parameter yang diperlukan
-        const result = await handleUnli({ domain, username, targetId });
+        const result = await fetch("/create", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ domain, ptla, username })
+});
+
         
         // Tampilkan hasil
         document.getElementById('result-name').textContent = result.name;
