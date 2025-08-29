@@ -5,9 +5,9 @@ app.use(express.json());
 
 app.post('/api/save-user', async (req, res) => {
   const { username, email, password } = req.body;
-  const token = 'GITHUB_PERSONAL_ACCESS_TOKEN'; // Ganti dengan token Anda
-  const repoOwner = 'GITHUB_USERNAME'; // Ganti dengan username GitHub Anda
-  const repoName = 'REPOSITORY_NAME'; // Ganti dengan nama repository
+  const token = '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'; // Ganti dengan token Anda
+  const repoOwner = 'iLyxxDev'; // Ganti dengan username GitHub Anda
+  const repoName = 'webpanel'; // Ganti dengan nama repository
   
   try {
     // 1. Dapatkan informasi file yang sudah ada
