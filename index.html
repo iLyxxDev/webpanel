@@ -406,48 +406,86 @@ function setConfig(eggId, locationId) {
 
 // Modifikasi fungsi handleUnli
 async function handleUnli({ domain, username, targetId }) {
-    // Ambil nilai dari hidden fields
     const ptla = document.getElementById('ptla').value;
     const egg = document.getElementById('egg').value;
     const loc = document.getElementById('loc').value;
-    
-    // Validasi input
-    if (!domain || !ptla) {
-        throw new Error("Domain/API Token belum disetting");
+
+    // 1. Buat user di panel
+    const userRes = await fetch(`${domain}/api/application/users`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${ptla}`,
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            email: `${username}@unli.nael`,
+            username: username,
+            first_name: username,
+            last_name: "Unli",
+            password: username + Math.random().toString(36).substring(2, 6)
+        })
+    });
+
+    if (!userRes.ok) {
+        const err = await userRes.json();
+        throw new Error("Gagal buat user: " + JSON.stringify(err.errors || err));
     }
-    
-    if (!egg || !loc) {
-        throw new Error("Egg atau Location ID tidak dikonfigurasi");
+
+    const userData = await userRes.json();
+
+    // 2. Buat server di panel
+    const serverRes = await fetch(`${domain}/api/application/servers`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${ptla}`,
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            name: `${username} Server`,
+            user: userData.attributes.id,
+            egg: parseInt(egg),
+            docker_image: "ghcr.io/parkervcp/yolks:nodejs_18", 
+            startup: "npm start",
+            environment: {},
+            limits: {
+                memory: 0,
+                swap: 0,
+                disk: 0,
+                io: 500,
+                cpu: 0
+            },
+            feature_limits: {
+                databases: 5,
+                backups: 5,
+                allocations: 5
+            },
+            allocation: {
+                default: 1
+            },
+            location: parseInt(loc)
+        })
+    });
+
+    if (!serverRes.ok) {
+        const err = await serverRes.json();
+        throw new Error("Gagal buat server: " + JSON.stringify(err.errors || err));
     }
-    
-    if (!username || !targetId) {
-        throw new Error("Username atau ID Telegram kosong!");
-    }
-    
-    // Simulasi delay jaringan
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Generate data acak untuk simulasi
-    const email = `${username}@unli.nael`;
-    const password = username + Math.random().toString(36).substring(2, 6);
-    const name = `${username} Server`;
-    const userId = Math.random().toString(36).substring(2, 10);
-    
-    // Simulasi 10% kemungkinan error
-    if (Math.random() < 0.1) {
-        throw new Error("Gagal membuat user: username sudah digunakan");
-    }
-    
-    // Hasil simulasi berhasil
+
+    const serverData = await serverRes.json();
+
+    // 3. Return hasil beneran
     return {
-        name,
-        email,
-        userId,
-        username,
-        password,
+        name: userData.attributes.first_name,
+        email: userData.attributes.email,
+        userId: userData.attributes.id,
+        username: userData.attributes.username,
+        password: userData.attributes.password || "(lihat di panel)", 
         url: domain
     };
 }
+
 
 // Modifikasi event listener form submit
 document.getElementById('serverForm').addEventListener('submit', async function(e) {
