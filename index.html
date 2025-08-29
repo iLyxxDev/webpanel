@@ -1,561 +1,129 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin Pterodactyl</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        :root {
-            --primary: #3c6e71;
-            --secondary: #284b63;
-            --accent: #f8961e;
-            --light: #f9f9f9;
-            --dark: #353535;
-            --danger: #e63946;
-            --success: #2a9d8f;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            color: var(--dark);
-            line-height: 1.6;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* Header Styles */
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 1rem 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo i {
-            font-size: 2rem;
-        }
-        
-        .logo h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-        
-        /* Auth Container */
-        .auth-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(rgba(60, 110, 113, 0.8), rgba(40, 75, 99, 0.9)), url('https://images.unsplash.com/photo-1627398242454-45a1465c2479?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            padding: 2rem 0;
-        }
-        
-        .auth-form {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 450px;
-            margin: 1rem;
-        }
-        
-        .auth-form h2 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: var(--secondary);
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-        
-        .btn:hover {
-            background-color: var(--secondary);
-            transform: translateY(-2px);
-        }
-        
-        .btn-outline {
-            background-color: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-        
-        .btn-outline:hover {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .auth-switch {
-            text-align: center;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #eee;
-        }
-        
-        /* Dashboard Styles */
-        .dashboard {
-            display: none;
-            padding: 2rem 0;
-        }
-        
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        
-        .welcome {
-            font-size: 1.5rem;
-            color: var(--secondary);
-        }
-        
-        .api-config {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            margin-bottom: 2rem;
-        }
-        
-        .api-config h3 {
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .form-row .form-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
-        
-        .servers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .server-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-        
-        .server-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .server-header {
-            background: var(--secondary);
-            color: white;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .server-status {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--success);
-        }
-        
-        .server-body {
-            padding: 1.5rem;
-        }
-        
-        .server-info {
-            margin-bottom: 1.5rem;
-        }
-        
-        .server-info p {
-            margin-bottom: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .server-info span {
-            font-weight: 600;
-        }
-        
-        .server-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .btn-sm {
-            padding: 8px 12px;
-            font-size: 0.9rem;
-        }
-        
-        .btn-danger {
-            background-color: var(--danger);
-        }
-        
-        .btn-success {
-            background-color: var(--success);
-        }
-        
-        /* Footer */
-        footer {
-            background-color: var(--dark);
-            color: white;
-            text-align: center;
-            padding: 1.5rem 0;
-            margin-top: 2rem;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .form-row {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .servers-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .dashboard-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nael Pterodactyl</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 50px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; }
+    input, select, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; }
+    button { background: #4CAF50; color: white; font-weight: bold; cursor: pointer; }
+    button:hover { background: #45a049; }
+  </style>
 </head>
 <body>
-    <!-- Auth Container -->
-    <div class="auth-container" id="authSection">
-        <!-- Login Form -->
-        <form class="auth-form" id="loginForm">
-            <h2><i class="fas fa-dragon"></i> Login Panel</h2>
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Masukkan username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Masukkan password" required>
-            </div>
-            <button type="submit" class="btn">Login</button>
-            <div class="auth-switch">
-                <p>Belum punya akun? <a href="#" id="showRegister">Daftar di sini</a></p>
-            </div>
-        </form>
+  <div class="container" id="loginBox">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
 
-        <!-- Register Form -->
-        <form class="auth-form" id="registerForm" style="display: none;">
-            <h2><i class="fas fa-dragon"></i> Daftar Akun Baru</h2>
-            <div class="form-group">
-                <label for="regUsername">Username</label>
-                <input type="text" id="regUsername" placeholder="Buat username" required>
-            </div>
-            <div class="form-group">
-                <label for="regEmail">Email</label>
-                <input type="email" id="regEmail" placeholder="Masukkan email" required>
-            </div>
-            <div class="form-group">
-                <label for="regPassword">Password</label>
-                <input type="password" id="regPassword" placeholder="Buat password" required>
-            </div>
-            <div class="form-group">
-                <label for="regConfirmPassword">Konfirmasi Password</label>
-                <input type="password" id="regConfirmPassword" placeholder="Konfirmasi password" required>
-            </div>
-            <button type="submit" class="btn">Daftar</button>
-            <div class="auth-switch">
-                <p>Sudah punya akun? <a href="#" id="showLogin">Login di sini</a></p>
-            </div>
-        </form>
-    </div>
+  <div class="container" id="dashboard" style="display:none;">
+    <h2>Dashboard</h2>
+    <select id="actionSelect">
+      <option value="">-- Pilih Aksi --</option>
+      <option value="createUser">Create User</option>
+      <option value="createServer">Create Server (Unlimited)</option>
+    </select>
+    <div id="formArea"></div>
+  </div>
 
-    <!-- Dashboard -->
-    <div class="dashboard" id="dashboardSection">
-        <header>
-            <div class="container header-content">
-                <div class="logo">
-                    <i class="fas fa-dragon"></i>
-                    <h1>Panel Pterodactyl</h1>
-                </div>
-                <div>
-                    <button class="btn btn-danger" id="logoutBtn">Logout</button>
-                </div>
-            </div>
-        </header>
+  <script>
+    const DOMAIN = "https://privnael.zxc.web.id";
+    const API_KEY = "PTLA_API_KEY_KAMU"; // isi manual
 
-        <div class="container">
-            <div class="dashboard-header">
-                <h2 class="welcome">Selamat datang, <span id="userName">Admin</span>!</h2>
-                <button class="btn" id="addServerBtn"><i class="fas fa-plus"></i> Tambah Server</button>
-            </div>
+    function login(){
+      const u = document.getElementById('username').value;
+      const p = document.getElementById('password').value;
+      if(u && p){
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+      } else {
+        alert("Isi username & password!");
+      }
+    }
 
-            <div class="api-config">
-                <h3>Konfigurasi API</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="apiKey">API Key (PTLA)</label>
-                        <input type="text" id="apiKey" placeholder="Masukkan API Key">
-                    </div>
-                    <div class="form-group">
-                        <label for="clientKey">Client Key (PTLC)</label>
-                        <input type="text" id="clientKey" placeholder="Masukkan Client Key">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="domain">Domain Panel</label>
-                    <input type="text" id="domain" placeholder="Masukkan domain panel">
-                </div>
-                <button class="btn">Simpan Konfigurasi</button>
-            </div>
+    document.getElementById('actionSelect').addEventListener('change', e => {
+      const val = e.target.value;
+      const formArea = document.getElementById('formArea');
+      formArea.innerHTML = "";
 
-            <h3 style="margin-bottom: 1rem;">Server Anda</h3>
-            <div class="servers-grid">
-                <!-- Server 1 -->
-                <div class="server-card">
-                    <div class="server-header">
-                        <h4>Minecraft Server</h4>
-                        <div class="server-status"></div>
-                    </div>
-                    <div class="server-body">
-                        <div class="server-info">
-                            <p>ID: <span>a1b2c3d4</span></p>
-                            <p>RAM: <span>4GB / 8GB</span></p>
-                            <p>Disk: <span>15GB / 20GB</span></p>
-                            <p>CPU: <span>25%</span></p>
-                        </div>
-                        <div class="server-actions">
-                            <button class="btn btn-sm">Manage</button>
-                            <button class="btn btn-sm btn-danger">Stop</button>
-                            <button class="btn btn-sm btn-success">Restart</button>
-                        </div>
-                    </div>
-                </div>
+      if(val === "createUser"){
+        formArea.innerHTML = `
+          <h3>Create User</h3>
+          <input type="text" id="email" placeholder="Email">
+          <input type="text" id="first" placeholder="First Name">
+          <input type="text" id="last" placeholder="Last Name">
+          <input type="text" id="usernameUser" placeholder="Username">
+          <input type="password" id="passUser" placeholder="Password">
+          <button onclick="createUser()">Create</button>
+        `;
+      }
 
-                <!-- Server 2 -->
-                <div class="server-card">
-                    <div class="server-header">
-                        <h4>Web Server</h4>
-                        <div class="server-status"></div>
-                    </div>
-                    <div class="server-body">
-                        <div class="server-info">
-                            <p>ID: <span>e5f6g7h8</span></p>
-                            <p>RAM: <span>2GB / 4GB</span></p>
-                            <p>Disk: <span>10GB / 25GB</span></p>
-                            <p>CPU: <span>15%</span></p>
-                        </div>
-                        <div class="server-actions">
-                            <button class="btn btn-sm">Manage</button>
-                            <button class="btn btn-sm btn-danger">Stop</button>
-                            <button class="btn btn-sm btn-success">Restart</button>
-                        </div>
-                    </div>
-                </div>
+      if(val === "createServer"){
+        formArea.innerHTML = `
+          <h3>Create Server (Unlimited)</h3>
+          <input type="text" id="userId" placeholder="User ID">
+          <input type="text" id="eggId" placeholder="Egg ID">
+          <input type="text" id="nestId" placeholder="Nest ID">
+          <input type="text" id="allocationId" placeholder="Allocation ID">
+          <input type="text" id="serverName" placeholder="Server Name">
+          <button onclick="createServer()">Create</button>
+        `;
+      }
+    });
 
-                <!-- Server 3 -->
-                <div class="server-card">
-                    <div class="server-header">
-                        <h4>Database Server</h4>
-                        <div class="server-status" style="background-color: #e63946;"></div>
-                    </div>
-                    <div class="server-body">
-                        <div class="server-info">
-                            <p>ID: <span>i9j0k1l2</span></p>
-                            <p>RAM: <span>1GB / 2GB</span></p>
-                            <p>Disk: <span>5GB / 10GB</span></p>
-                            <p>CPU: <span>5%</span></p>
-                        </div>
-                        <div class="server-actions">
-                            <button class="btn btn-sm">Manage</button>
-                            <button class="btn btn-sm btn-danger">Stop</button>
-                            <button class="btn btn-sm btn-success">Start</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    async function createUser(){
+      const data = {
+        email: document.getElementById('email').value,
+        username: document.getElementById('usernameUser').value,
+        first_name: document.getElementById('first').value,
+        last_name: document.getElementById('last').value,
+        password: document.getElementById('passUser').value
+      };
 
-        <footer>
-            <div class="container">
-                <p>&copy; 2023 Panel Pterodactyl. All rights reserved.</p>
-            </div>
-        </footer>
-    </div>
+      const res = await fetch(`${DOMAIN}/api/application/users`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${API_KEY}`,
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
 
-    <script>
-        // Toggle antara form login dan register
-        document.getElementById('showRegister').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-        });
-        
-        document.getElementById('showLogin').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('registerForm').style.display = 'none';
-            document.getElementById('loginForm').style.display = 'block';
-        });
-        
-        // Simulasi login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            // Simulasi autentikasi
-            if (username && password) {
-                // Cek apakah user ada di localStorage
-                const users = JSON.parse(localStorage.getItem('pterodactylUsers')) || [];
-                const user = users.find(u => u.username === username && u.password === password);
-                
-                if (user) {
-                    document.getElementById('userName').textContent = user.username;
-                    
-                    // Tampilkan dashboard, sembunyikan form login
-                    document.getElementById('authSection').style.display = 'none';
-                    document.getElementById('dashboardSection').style.display = 'block';
-                } else {
-                    alert('Username atau password salah!');
-                }
-            } else {
-                alert('Username dan password harus diisi!');
-            }
-        });
-        
-        // Simulasi pendaftaran
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('regUsername').value;
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-            const confirmPassword = document.getElementById('regConfirmPassword').value;
-            
-            if (password !== confirmPassword) {
-                alert('Password dan konfirmasi password tidak cocok!');
-                return;
-            }
-            
-            // Simpan user ke localStorage
-            const users = JSON.parse(localStorage.getItem('pterodactylUsers')) || [];
-            
-            // Cek apakah username sudah ada
-            if (users.some(user => user.username === username)) {
-                alert('Username sudah digunakan!');
-                return;
-            }
-            
-            // Tambahkan user baru
-            users.push({
-                username,
-                email,
-                password
-            });
-            
-            localStorage.setItem('pterodactylUsers', JSON.stringify(users));
-            
-            // Simpan ke GitHub (dijelaskan di bagian terpisah)
-            saveUserToGitHub(username, email, password);
-            
-            alert('Pendaftaran berhasil! Silakan login.');
-            document.getElementById('registerForm').style.display = 'none';
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').reset();
-        });
-        
-        // Logout functionality
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            // Kembali ke halaman login
-            document.getElementById('authSection').style.display = 'flex';
-            document.getElementById('dashboardSection').style.display = 'none';
-            
-            // Reset form
-            document.getElementById('loginForm').reset();
-        });
-        
-        // Tambah server button
-        document.getElementById('addServerBtn').addEventListener('click', function() {
-            alert('Fitur tambah server akan dibuka. Dalam implementasi nyata, ini akan membuka form untuk menambahkan server baru.');
-        });
-        
-        // Fungsi untuk menyimpan user ke GitHub
-        function saveUserToGitHub(username, email, password) {
-            // Dalam implementasi nyata, ini akan mengirim data ke backend
-            // yang kemudian akan menyimpannya ke repository GitHub
-            console.log('Menyimpan user ke GitHub:', { username, email, password });
-            
-            // Contoh implementasi dengan GitHub API akan memerlukan:
-            // 1. Token akses personal GitHub
-            // 2. Nama repository
-            // 3. API call untuk menambahkan atau mengupdate file
-        }
-    </script>
+      const json = await res.json();
+      alert("User Created: " + JSON.stringify(json));
+    }
+
+    async function createServer(){
+      const data = {
+        name: document.getElementById('serverName').value,
+        user: parseInt(document.getElementById('userId').value),
+        egg: parseInt(document.getElementById('eggId').value),
+        nest: parseInt(document.getElementById('nestId').value),
+        allocation: { default: parseInt(document.getElementById('allocationId').value) },
+        limits: { memory: 0, swap: 0, disk: 0, io: 500, cpu: 0 },
+        docker_image: "ghcr.io/pterodactyl/yolks:nodejs_18",
+        environment: {}
+      };
+
+      const res = await fetch(`${DOMAIN}/api/application/servers`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${API_KEY}`,
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const json = await res.json();
+      alert("Server Created: " + JSON.stringify(json));
+    }
+  </script>
 </body>
 </html>
