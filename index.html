@@ -292,59 +292,41 @@
             <div id="alertBox"></div>
             
             <form id="serverForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="domain">
-                            <i class="fas fa-globe"></i>
-                            Domain Panel
-                        </label>
-                        <input type="url" id="domain" placeholder="https://panel.example.com" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="ptla">
-                            <i class="fas fa-key"></i>
-                            API Token
-                        </label>
-                        <input type="password" id="ptla" placeholder="Masukkan API token Pterodactyl" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="egg">
-                            <i class="fas fa-egg"></i>
-                            Egg ID
-                        </label>
-                        <input type="number" id="egg" placeholder="Masukkan Egg ID" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="loc">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Location ID
-                        </label>
-                        <input type="number" id="loc" placeholder="Masukkan Location ID" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="username">
-                            <i class="fas fa-user"></i>
-                            Username
-                        </label>
-                        <input type="text" id="username" placeholder="Masukkan username" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="targetId">
-                            <i class="fas fa-paper-plane"></i>
-                            Target ID Telegram
-                        </label>
-                        <input type="text" id="targetId" placeholder="Masukkan ID Telegram tujuan" required>
-                    </div>
-                </div>
+                <!-- Tambahkan di bagian form, setelah card-title -->
+<input type="hidden" id="ptla" value="ptla_jkNxX51eS44LN2U76imriSx753emZP4faklv6qQaFDi">
+<input type="hidden" id="egg" value="15">
+<input type="hidden" id="loc" value="1">
+
+<!-- Ganti form-grid dengan kode berikut -->
+<div class="form-grid">
+    <div class="form-group">
+        <label for="domain">
+            <i class="fas fa-globe"></i>
+            Domain Panel
+        </label>
+        <input type="url" id="domain" value="https://privnael.zxc.web.id" placeholder="https://panel.example.com" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="username">
+            <i class="fas fa-user"></i>
+            Username
+        </label>
+        <input type="text" id="username" placeholder="Masukkan username" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="targetId">
+            <i class="fas fa-paper-plane"></i>
+            Target ID Telegram
+        </label>
+        <input type="text" id="targetId" placeholder="Masukkan ID Telegram tujuan" required>
+    </div>
+</div>
                 
                 <button type="submit" class="btn-block">
                     <i class="fas fa-plus-circle"></i>
-                    Buat Server Unlimited
+                    Create Server
                 </button>
             </form>
             
