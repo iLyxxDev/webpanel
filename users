@@ -9,6 +9,10 @@
         "branch": "main",
         "file": "users"
       }
+    },
+    "mayle": {
+      "password": "12345",
+      "createdAt": "2025-11-10T19:47:30.325Z"
     }
   }
 }
