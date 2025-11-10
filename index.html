@@ -20,7 +20,76 @@
             line-height: 1.6;
         }
         
-        .container {
+        /* Auth Screen Styles */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .auth-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-header h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            letter-spacing: -0.5px;
+        }
+        
+        .auth-header p {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .auth-tab.active {
+            color: #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        /* Dashboard Styles */
+        .dashboard-container {
+            display: none;
             max-width: 1000px;
             margin: 0 auto;
             padding: 40px 20px;
@@ -340,11 +409,88 @@
         .card-full {
             grid-column: 1 / -1;
         }
+        
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            width: auto;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
+    <!-- Authentication Screen -->
+    <div class="auth-container" id="authScreen">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1><i class="fas fa-key"></i> Token Management</h1>
+                <p>Khusus Reseller SC, ketauan nyebar website? Blacklist!</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="signInTab">Sign In</div>
+                <div class="auth-tab" id="signUpTab">Sign Up</div>
+            </div>
+            
+            <div class="auth-form active" id="signInForm">
+                <div class="form-group">
+                    <label for="signInUsername">Username</label>
+                    <input type="text" id="signInUsername" placeholder="Masukkan username" />
+                </div>
+                <div class="form-group">
+                    <label for="signInPassword">Password</label>
+                    <input type="password" id="signInPassword" placeholder="Masukkan password" />
+                </div>
+                <button id="signInBtn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+                <div id="signInStatus" class="status-message"></div>
+            </div>
+            
+            <div class="auth-form" id="signUpForm">
+                <div class="form-group">
+                    <label for="signUpUsername">Username</label>
+                    <input type="text" id="signUpUsername" placeholder="Buat username" />
+                </div>
+                <div class="form-group">
+                    <label for="signUpPassword">Password</label>
+                    <input type="password" id="signUpPassword" placeholder="Buat password" />
+                </div>
+                <div class="form-group">
+                    <label for="signUpConfirmPassword">Konfirmasi Password</label>
+                    <input type="password" id="signUpConfirmPassword" placeholder="Ulangi password" />
+                </div>
+                <button id="signUpBtn">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
+                <div id="signUpStatus" class="status-message"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dashboard Screen -->
+    <div class="dashboard-container" id="dashboardScreen">
+        <div class="user-info">
+            <span id="currentUser">User</span>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+        
         <header>
             <h1><i class="fas fa-key"></i> Token Management</h1>
             <p class="subtitle">Khusus Reseller SC, ketauan nyebar website? Blacklist!</p>
@@ -434,9 +580,123 @@
     </div>
 
     <script>
-        // Konfigurasi
+        // Authentication System
+        let users = JSON.parse(localStorage.getItem('tokenDashboardUsers')) || {};
+        let currentUser = localStorage.getItem('tokenDashboardCurrentUser') || '';
+        
+        // Konfigurasi GitHub
         let useProxy = false;
         const PROXY_URL = 'https://cors-anywhere.herokuapp.com/';
+        
+        // Fungsi untuk menampilkan halaman auth
+        function showAuthScreen() {
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('dashboardScreen').style.display = 'none';
+            currentUser = '';
+            localStorage.removeItem('tokenDashboardCurrentUser');
+        }
+        
+        // Fungsi untuk menampilkan dashboard
+        function showDashboard() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            document.getElementById('currentUser').textContent = currentUser;
+            loadTokenList();
+        }
+        
+        // Fungsi untuk sign up
+        function signUp() {
+            const username = document.getElementById('signUpUsername').value.trim();
+            const password = document.getElementById('signUpPassword').value;
+            const confirmPassword = document.getElementById('signUpConfirmPassword').value;
+            
+            if (!username || !password) {
+                showStatus('signUpStatus', '❌ Username dan password harus diisi!', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showStatus('signUpStatus', '❌ Password tidak cocok!', 'error');
+                return;
+            }
+            
+            if (users[username]) {
+                showStatus('signUpStatus', '❌ Username sudah digunakan!', 'error');
+                return;
+            }
+            
+            // Simpan user baru
+            users[username] = { password: password };
+            localStorage.setItem('tokenDashboardUsers', JSON.stringify(users));
+            
+            showStatus('signUpStatus', '✅ Akun berhasil dibuat! Silakan sign in.', 'success');
+            
+            // Reset form
+            document.getElementById('signUpUsername').value = '';
+            document.getElementById('signUpPassword').value = '';
+            document.getElementById('signUpConfirmPassword').value = '';
+            
+            // Switch ke tab sign in
+            document.getElementById('signInTab').click();
+        }
+        
+        // Fungsi untuk sign in
+        function signIn() {
+            const username = document.getElementById('signInUsername').value.trim();
+            const password = document.getElementById('signInPassword').value;
+            
+            if (!username || !password) {
+                showStatus('signInStatus', '❌ Username dan password harus diisi!', 'error');
+                return;
+            }
+            
+            if (!users[username] || users[username].password !== password) {
+                showStatus('signInStatus', '❌ Username atau password salah!', 'error');
+                return;
+            }
+            
+            // Login berhasil
+            currentUser = username;
+            localStorage.setItem('tokenDashboardCurrentUser', currentUser);
+            showDashboard();
+        }
+        
+        // Fungsi untuk logout
+        function logout() {
+            showAuthScreen();
+        }
+        
+        // Event listeners untuk auth
+        document.getElementById('signInTab').addEventListener('click', function() {
+            document.getElementById('signInTab').classList.add('active');
+            document.getElementById('signUpTab').classList.remove('active');
+            document.getElementById('signInForm').classList.add('active');
+            document.getElementById('signUpForm').classList.remove('active');
+        });
+        
+        document.getElementById('signUpTab').addEventListener('click', function() {
+            document.getElementById('signUpTab').classList.add('active');
+            document.getElementById('signInTab').classList.remove('active');
+            document.getElementById('signUpForm').classList.add('active');
+            document.getElementById('signInForm').classList.remove('active');
+        });
+        
+        document.getElementById('signInBtn').addEventListener('click', signIn);
+        document.getElementById('signUpBtn').addEventListener('click', signUp);
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        
+        // Tambah event listener untuk Enter key pada form auth
+        document.getElementById('signInPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                signIn();
+            }
+        });
+        
+        document.getElementById('signUpConfirmPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                signUp();
+            }
+        });
         
         // Fungsi untuk mendapatkan konfigurasi repository
         function getRepoConfig() {
@@ -778,26 +1038,30 @@
             }
         }
         
-        // Event listeners
+        // Event listeners untuk dashboard
         document.getElementById('addTokenBtn').addEventListener('click', addToken);
         document.getElementById('refreshTokensBtn').addEventListener('click', loadTokenList);
         document.getElementById('testConnectionBtn').addEventListener('click', testGitHubConnection);
         document.getElementById('useProxyBtn').addEventListener('click', toggleProxy);
-        
-        // Muat daftar token saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set default GitHub token jika tersedia
-            const defaultToken = '';
-            document.getElementById('githubToken').value = defaultToken;
-            
-            loadTokenList();
-        });
         
         // Tambah event listener untuk Enter key pada input token
         document.getElementById('tokenInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 addToken();
             }
+        });
+        
+        // Cek apakah user sudah login saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            if (currentUser) {
+                showDashboard();
+            } else {
+                showAuthScreen();
+            }
+            
+            // Set default GitHub token jika tersedia
+            const defaultToken = '';
+            document.getElementById('githubToken').value = defaultToken;
         });
     </script>
 </body>
