@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Token Management Dashboard</title>
+    <title>Naeri Token Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         * {
@@ -489,7 +489,7 @@
     <div class="auth-container" id="authScreen">
         <div class="auth-card">
             <div class="auth-header">
-                <h1><i class="fas fa-key"></i> Token Management</h1>
+                <h1><i class="fas fa-key"></i> Naeri Token Management</h1>
                 <p>Khusus Reseller Script Naeri, ketahuan nyebar website? Blacklist!</p>
             </div>
             
@@ -523,7 +523,7 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="signUpRepoOwner">Repository Owner</label>
+                            <label for="signUpRepoOwner">Owner</label>
                             <input type="password" id="signUpRepoOwner" placeholder="username-github-anda" value="iLyxxDev" />
                             <span class="form-note">Username GitHub Anda</span>
                         </div>
@@ -581,7 +581,7 @@
         </div>
         
         <header>
-            <h1><i class="fas fa-key"></i> Token Management</h1>
+            <h1><i class="fas fa-key"></i> Naeri Token Management</h1>
             <p class="subtitle">Khusus Reseller Script Naeri, ketahuan nyebar website? Blacklist!</p>
         </header>
         
@@ -591,27 +591,27 @@
                 <div class="config-section">
                     <div class="form-group">
                         <label for="githubToken">Reseller Access Token</label>
-                        <input type="password" id="githubToken" placeholder="Token dari @naeldev" />
+                        <input type="password" id="githubToken" placeholder="PV @naeldev" />
                         <span class="form-note">Token ini digunakan untuk Akses Login</span>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="repoOwner">Repository Owner</label>
-                            <input type="password" id="repoOwner" placeholder="iLyxxDev" />
+                            <input type="password" id="repoOwner" value="iLyxxDev"/>
                         </div>
                         <div class="form-group">
                             <label for="repoName">Repository Name</label>
-                            <input type="password" id="repoName" placeholder="database" />
+                            <input type="password" id="repoName" value="database"/>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="branchName">Branch</label>
-                            <input type="password" id="branchName" placeholder="main" value="main" />
+                            <input type="password" id="branchName" value="main" />
                         </div>
                         <div class="form-group">
-                            <label for="fileName">File Name</label>
-                            <input type="password" id="fileName" placeholder="token" value="token" />
+                            <label for="fileName">Nama File</label>
+                            <input type="password" id="fileName" value="token" />
                         </div>
                     </div>
                     <button id="testConnectionBtn">
@@ -894,22 +894,22 @@
             const githubToken = getSignUpGitHubToken();
             
             if (!username || !password) {
-                showStatus('signUpStatus', '❌ Username dan password harus diisi!', 'error');
+                showStatus('signUpStatus', 'Username dan password harus diisi!', 'error');
                 return;
             }
             
             if (password !== confirmPassword) {
-                showStatus('signUpStatus', '❌ Password tidak cocok!', 'error');
+                showStatus('signUpStatus', 'Password tidak cocok!', 'error');
                 return;
             }
             
             if (!githubToken) {
-                showStatus('signUpStatus', '❌ GitHub Token diperlukan untuk menyimpan data user!', 'error');
+                showStatus('signUpStatus', 'GitHub Token diperlukan!', 'error');
                 return;
             }
             
             if (!config.owner || !config.repo) {
-                showStatus('signUpStatus', '❌ Repository Owner dan Name harus diisi!', 'error');
+                showStatus('signUpStatus', 'Repository Owner dan Name harus diisi!', 'error');
                 return;
             }
             
@@ -920,7 +920,7 @@
                 let users = await fetchUsers(config, githubToken);
                 
                 if (users[username]) {
-                    showStatus('signUpStatus', '❌ Username sudah digunakan!', 'error');
+                    showStatus('signUpStatus', 'Username sudah digunakan!', 'error');
                     setButtonLoading('signUpBtn', false);
                     return;
                 }
@@ -964,7 +964,7 @@
             const password = document.getElementById('signInPassword').value;
             
             if (!username || !password) {
-                showStatus('signInStatus', '❌ Username dan password harus diisi!', 'error');
+                showStatus('signInStatus', 'Username dan password harus diisi!', 'error');
                 return;
             }
             
@@ -992,7 +992,7 @@
                 }
                 
                 if (!users[username] || users[username].password !== password) {
-                    showStatus('signInStatus', '❌ Username atau password salah!', 'error');
+                    showStatus('signInStatus', 'Username atau password tidak ditemukan!', 'error');
                     setButtonLoading('signInBtn', false);
                     return;
                 }
