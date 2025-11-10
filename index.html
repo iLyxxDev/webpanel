@@ -6,7 +6,481 @@
     <title>Token Management Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
-        /* ... (CSS tetap sama) ... */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        /* Auth Screen Styles */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .auth-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-header h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            letter-spacing: -0.5px;
+        }
+        
+        .auth-header p {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .auth-tab.active {
+            color: #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        /* Dashboard Styles */
+        .dashboard-container {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            letter-spacing: -0.5px;
+        }
+        
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .card h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .card h2 i {
+            font-size: 1.3rem;
+            color: #495057;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            background: #ffffff;
+            color: #2c3e50;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+        
+        button {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        button:hover:not(:disabled) {
+            background: #34495e;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: #5a6268;
+        }
+        
+        .status-message {
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            white-space: pre-line;
+            font-size: 0.95rem;
+            border-left: 4px solid transparent;
+        }
+        
+        .success {
+            background: #f8fff9;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .error {
+            background: #fff8f8;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .warning {
+            background: #fffef8;
+            border-color: #ffc107;
+            color: #856404;
+        }
+        
+        .info {
+            background: #f8fdff;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+        
+        .token-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+        
+        .token-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+        
+        .token-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .token-item:last-child {
+            border-bottom: none;
+        }
+        
+        .token-text {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            word-break: break-all;
+            flex: 1;
+            margin-right: 20px;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        
+        .token-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            width: auto;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            color: #6c757d;
+            font-size: 0.9rem;
+            padding-top: 30px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .config-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .config-section h3 {
+            margin-bottom: 15px;
+            color: #495057;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        .troubleshoot-section {
+            background: #fffef8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .troubleshoot-section h4 {
+            color: #856404;
+            margin-bottom: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .troubleshoot-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .troubleshoot-list li {
+            margin-bottom: 8px;
+            padding-left: 24px;
+            position: relative;
+            color: #856404;
+        }
+        
+        .troubleshoot-list li:before {
+            content: "•";
+            color: #ffc107;
+            position: absolute;
+            left: 12px;
+            font-weight: bold;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #dee2e6;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card-full {
+            grid-column: 1 / -1;
+        }
+        
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            width: auto;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        
+        .setup-info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .setup-info h3 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+        
+        .setup-info ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .setup-info li {
+            margin-bottom: 8px;
+        }
+        
+        .setup-info code {
+            background: #f1f8ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .github-config-section {
+            background: #f0f8ff;
+            border: 1px solid #cce5ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .github-config-section h4 {
+            color: #0066cc;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-note {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+            display: block;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -127,7 +601,7 @@
                 <div class="config-section">
                     <div class="form-group">
                         <label for="githubToken">GitHub Personal Access Token</label>
-                        <input type="password" id="githubToken" placeholder="Masukkan GitHub Token Anda" />
+                        <input type="password" id="githubToken" placeholder="GitHub Token akan terisi otomatis" />
                         <span class="form-note">Token ini digunakan untuk mengakses repository data</span>
                     </div>
                     <div class="form-row">
@@ -477,11 +951,11 @@
                 
                 showStatus('signUpStatus', '🔄 Menyimpan data user ke GitHub...', 'info');
                 
-                // HANYA simpan password dan konfigurasi repository (TIDAK simpan githubToken)
+                // Tambah user baru
                 users[username] = { 
                     password: password,
-                    createdAt: new Date().toISOString()
-                };
+                    createdAt: new Date().toISOString(),
+                    };
                 
                 const success = await updateUsers(users, config, githubToken);
                 
@@ -558,7 +1032,9 @@
                     document.getElementById('branchName').value = userData.repoConfig.branch;
                     document.getElementById('fileName').value = userData.repoConfig.file;
                 }
-                // TIDAK mengisi githubToken secara otomatis - user harus mengisi manual
+                if (userData.githubToken) {
+                    document.getElementById('githubToken').value = userData.githubToken;
+                }
                 
                 showDashboard();
                 
