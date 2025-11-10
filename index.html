@@ -80,7 +80,7 @@
             font-weight: 500;
         }
         
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 12px 15px;
             border-radius: 8px;
@@ -91,7 +91,7 @@
             transition: all 0.3s ease;
         }
         
-        input:focus, textarea:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #4cc9f0;
             box-shadow: 0 0 0 2px rgba(76, 201, 240, 0.2);
@@ -233,6 +233,37 @@
             color: #4cc9f0;
         }
         
+        .troubleshoot-section {
+            background: rgba(246, 173, 85, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #f6ad55;
+        }
+        
+        .troubleshoot-section h4 {
+            color: #f6ad55;
+            margin-bottom: 10px;
+        }
+        
+        .troubleshoot-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .troubleshoot-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .troubleshoot-list li:before {
+            content: "•";
+            color: #f6ad55;
+            position: absolute;
+            left: 0;
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 10px;
@@ -272,22 +303,46 @@
             <div class="config-section">
                 <div class="form-group">
                     <label for="githubToken">GitHub Personal Access Token:</label>
-                    <input type="password" id="githubToken" placeholder="Masukkan GitHub PAT Anda" value="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" />
+                    <input type="password" id="githubToken" placeholder="Masukkan GitHub PAT Anda" />
                     <small style="color: #a5b4fc; margin-top: 5px; display: block;">
-                        Token ini digunakan untuk mengakses repository GitHub
+                        Token ini digunakan untuk mengakses repository GitHub. Pastikan token memiliki permissions "repo"
                     </small>
                 </div>
                 <div class="form-group">
-                    <label for="repoInfo">Repository Info:</label>
-                    <input type="text" id="repoInfo" value="iLyxxDev/database" readonly />
-                    <small style="color: #a5b4fc; margin-top: 5px; display: block;">
-                        Repository target untuk menyimpan token
-                    </small>
+                    <label for="repoOwner">Repository Owner:</label>
+                    <input type="text" id="repoOwner" placeholder="iLyxxDev" value="iLyxxDev" />
+                </div>
+                <div class="form-group">
+                    <label for="repoName">Repository Name:</label>
+                    <input type="text" id="repoName" placeholder="database" value="database" />
+                </div>
+                <div class="form-group">
+                    <label for="branchName">Branch:</label>
+                    <input type="text" id="branchName" placeholder="main" value="main" />
+                </div>
+                <div class="form-group">
+                    <label for="fileName">File Name:</label>
+                    <input type="text" id="fileName" placeholder="token" value="token" />
                 </div>
                 <button id="testConnectionBtn">
                     <i class="fas fa-plug"></i> Test Koneksi GitHub
                 </button>
                 <div id="connectionStatus" class="status-message"></div>
+            </div>
+            
+            <div class="troubleshoot-section">
+                <h4><i class="fas fa-tools"></i> Troubleshooting Koneksi</h4>
+                <ul class="troubleshoot-list">
+                    <li>Pastikan GitHub Token memiliki permission "repo"</li>
+                    <li>Periksa koneksi internet Anda</li>
+                    <li>Pastikan repository dan branch ada</li>
+                    <li>Coba gunakan CORS proxy jika ada masalah CORS</li>
+                    <li>Periksa console browser untuk error detail (F12)</li>
+                </ul>
+                <button id="useProxyBtn" class="btn-secondary" style="margin-top: 10px;">
+                    <i class="fas fa-server"></i> Gunakan CORS Proxy
+                </button>
+                <div id="proxyStatus" class="status-message"></div>
             </div>
         </div>
         
@@ -322,13 +377,31 @@
     </div>
 
     <script>
-        // Konstanta untuk GitHub API
-        const RAW_URL = 'https://raw.githubusercontent.com/iLyxxDev/database/refs/heads/main/token';
-        const API_URL = 'https://api.github.com/repos/iLyxxDev/database/contents/token';
+        // Konfigurasi
+        let useProxy = false;
+        const PROXY_URL = 'https://cors-anywhere.herokuapp.com/';
         
-        // Variabel global untuk menyimpan data
-        let currentTokens = [];
-        let currentFileSHA = null;
+        // Fungsi untuk mendapatkan konfigurasi repository
+        function getRepoConfig() {
+            return {
+                owner: document.getElementById('repoOwner').value.trim() || 'iLyxxDev',
+                repo: document.getElementById('repoName').value.trim() || 'database',
+                branch: document.getElementById('branchName').value.trim() || 'main',
+                file: document.getElementById('fileName').value.trim() || 'token'
+            };
+        }
+        
+        // Fungsi untuk mendapatkan URL
+        function getURLs() {
+            const config = getRepoConfig();
+            const baseRawURL = `https://raw.githubusercontent.com/${config.owner}/${config.repo}/${config.branch}`;
+            const baseAPIURL = `https://api.github.com/repos/${config.owner}/${config.repo}/contents`;
+            
+            return {
+                raw: `${baseRawURL}/${config.file}`,
+                api: `${baseAPIURL}/${config.file}`
+            };
+        }
         
         // Fungsi untuk mendapatkan GitHub Token dari input
         function getGitHubToken() {
@@ -341,13 +414,6 @@
             element.textContent = message;
             element.className = `status-message ${type}`;
             element.style.display = 'block';
-            
-            // Sembunyikan pesan setelah 5 detik untuk pesan sukses
-            if (type === 'success') {
-                setTimeout(() => {
-                    element.style.display = 'none';
-                }, 5000);
-            }
         }
         
         // Fungsi untuk menampilkan loading state pada button
@@ -367,80 +433,117 @@
             }
         }
         
-        // Fungsi untuk mengambil token dari GitHub
-        async function fetchTokens() {
+        // Fungsi untuk membuat request dengan error handling yang lebih baik
+        async function makeRequest(url, options = {}) {
+            const finalUrl = useProxy ? PROXY_URL + url : url;
+            
             try {
-                const response = await axios.get(RAW_URL, {
+                const response = await axios({
+                    url: finalUrl,
+                    method: options.method || 'GET',
                     headers: {
-                        'Cache-Control': 'no-cache',
-                        'Pragma': 'no-cache'
+                        'Authorization': options.token ? `token ${options.token}` : undefined,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json',
+                        ...options.headers
+                    },
+                    data: options.data,
+                    timeout: 30000, // 30 second timeout
+                    validateStatus: function (status) {
+                        return status >= 200 && status < 300;
                     }
                 });
                 
-                if (response.data && response.data.tokens) {
-                    currentTokens = response.data.tokens;
-                    return currentTokens;
-                } else {
-                    currentTokens = [];
-                    return [];
-                }
+                return { success: true, data: response.data };
             } catch (error) {
-                console.error('Error fetching tokens:', error);
-                throw new Error('Gagal mengambil token dari GitHub: ' + error.message);
+                console.error('Request error:', error);
+                
+                if (error.response) {
+                    // Server responded with error status
+                    return { 
+                        success: false, 
+                        error: `GitHub API Error: ${error.response.status} - ${error.response.data?.message || 'Unknown error'}` 
+                    };
+                } else if (error.request) {
+                    // Request was made but no response received
+                    return { 
+                        success: false, 
+                        error: 'Network Error: Tidak dapat terhubung ke GitHub. Periksa koneksi internet Anda.' 
+                    };
+                } else {
+                    // Something else happened
+                    return { 
+                        success: false, 
+                        error: `Error: ${error.message}` 
+                    };
+                }
+            }
+        }
+        
+        // Fungsi untuk mengambil token dari GitHub
+        async function fetchTokens() {
+            const urls = getURLs();
+            const result = await makeRequest(urls.raw);
+            
+            if (!result.success) {
+                throw new Error(result.error);
+            }
+            
+            try {
+                const data = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+                return data.tokens || [];
+            } catch (parseError) {
+                throw new Error('Gagal memparse data token: ' + parseError.message);
             }
         }
         
         // Fungsi untuk mendapatkan SHA file saat ini
         async function getFileSHA() {
-            try {
-                const githubToken = getGitHubToken();
-                const response = await axios.get(API_URL, {
-                    headers: {
-                        'Authorization': `token ${githubToken}`,
-                        'Cache-Control': 'no-cache'
-                    }
-                });
-                currentFileSHA = response.data.sha;
-                return currentFileSHA;
-            } catch (error) {
-                console.error('Error getting file SHA:', error);
-                throw new Error('Gagal mendapatkan SHA file: ' + error.message);
+            const urls = getURLs();
+            const githubToken = getGitHubToken();
+            
+            if (!githubToken) {
+                throw new Error('GitHub Token diperlukan untuk operasi ini');
             }
+            
+            const result = await makeRequest(urls.api, { token: githubToken });
+            
+            if (!result.success) {
+                throw new Error(result.error);
+            }
+            
+            return result.data.sha;
         }
         
         // Fungsi untuk memperbarui token di GitHub
         async function updateTokens(newTokens) {
-            try {
-                const githubToken = getGitHubToken();
-                
-                // Dapatkan SHA terbaru
-                await getFileSHA();
-                
-                const updatedContent = Buffer.from(
-                    JSON.stringify({ tokens: newTokens }, null, 2)
-                ).toString("base64");
-                
-                const response = await axios.put(
-                    API_URL,
-                    {
-                        message: "Update token list via Web Dashboard",
-                        content: updatedContent,
-                        sha: currentFileSHA
-                    },
-                    {
-                        headers: {
-                            'Authorization': `token ${githubToken}`,
-                            'Content-Type': 'application/json'
-                        }
-                    }
-                );
-                
-                currentTokens = newTokens;
-                return true;
-            } catch (error) {
-                console.error('Error updating tokens:', error);
-                throw new Error('Gagal memperbarui token di GitHub: ' + error.message);
+            const urls = getURLs();
+            const githubToken = getGitHubToken();
+            
+            if (!githubToken) {
+                throw new Error('GitHub Token diperlukan untuk operasi ini');
             }
+            
+            // Dapatkan SHA terbaru
+            const sha = await getFileSHA();
+            
+            const updatedContent = btoa(JSON.stringify({ tokens: newTokens }, null, 2));
+            
+            const result = await makeRequest(urls.api, {
+                method: 'PUT',
+                token: githubToken,
+                data: {
+                    message: "Update token list via Web Dashboard",
+                    content: updatedContent,
+                    sha: sha
+                }
+            });
+            
+            if (!result.success) {
+                throw new Error(result.error);
+            }
+            
+            return true;
         }
         
         // Fungsi untuk memuat daftar token
@@ -592,9 +695,26 @@
                 
             } catch (error) {
                 console.error('Error testing connection:', error);
-                showStatus('connectionStatus', '❌ Gagal terhubung ke GitHub: ' + error.message, 'error');
+                showStatus('connectionStatus', '❌ ' + error.message, 'error');
             } finally {
                 setButtonLoading('testConnectionBtn', false);
+            }
+        }
+        
+        // Fungsi untuk toggle CORS proxy
+        function toggleProxy() {
+            useProxy = !useProxy;
+            const button = document.getElementById('useProxyBtn');
+            const status = document.getElementById('proxyStatus');
+            
+            if (useProxy) {
+                button.innerHTML = '<i class="fas fa-server"></i> Nonaktifkan CORS Proxy';
+                button.classList.add('btn-secondary');
+                showStatus('proxyStatus', '✅ CORS Proxy diaktifkan. Mencoba mengatasi masalah CORS.', 'success');
+            } else {
+                button.innerHTML = '<i class="fas fa-server"></i> Gunakan CORS Proxy';
+                button.classList.remove('btn-secondary');
+                showStatus('proxyStatus', 'ℹ️ CORS Proxy dinonaktifkan.', 'info');
             }
         }
         
@@ -602,9 +722,14 @@
         document.getElementById('addTokenBtn').addEventListener('click', addToken);
         document.getElementById('refreshTokensBtn').addEventListener('click', loadTokenList);
         document.getElementById('testConnectionBtn').addEventListener('click', testGitHubConnection);
+        document.getElementById('useProxyBtn').addEventListener('click', toggleProxy);
         
         // Muat daftar token saat halaman dimuat
         document.addEventListener('DOMContentLoaded', function() {
+            // Set default GitHub token jika tersedia
+            const defaultToken = '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';
+            document.getElementById('githubToken').value = defaultToken;
+            
             loadTokenList();
         });
         
