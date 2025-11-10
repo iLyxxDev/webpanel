@@ -508,7 +508,7 @@
                     <input type="password" id="signInPassword" placeholder="Masukkan password" />
                 </div>
                 <button id="signInBtn">
-                    <i class="fas fa-sign-in-alt"></i> Sign In
+                    <i class="fas fa-sign-in-alt"></i> Masuk
                 </button>
                 <div id="signInStatus" class="status-message"></div>
             </div>
@@ -518,8 +518,8 @@
                     <h4><i class="fab fa-github"></i> Account Configuration</h4>
                     <div class="form-group">
                         <label for="signUpGithubToken">Reseller Access Token</label>
-                        <input type="password" id="signUpGithubToken" placeholder="Masukkan Token Anda" />
-                        <span class="form-note">Token ini digunakan untuk Akses Login</span>
+                        <input type="password" id="signUpGithubToken" placeholder="Masukkan Token" />
+                        <span class="form-note">Token ini digunakan untuk Akses Login dari @naeldev</span>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -541,7 +541,7 @@
                         </div>
                         <div class="form-group">
                             <label for="signUpFileName">File Name</label>
-                            <input type="password" id="signUpFileName" placeholder="users" value="users.json" />
+                            <input type="password" id="signUpFileName" placeholder="users" value="users" />
                             <span class="form-note">Nama file</span>
                         </div>
                     </div>
@@ -875,7 +875,7 @@
                 
                 // Coba akses repository user data
                 await getUserFileSHA(config, githubToken);
-                showStatus('signUpConnectionStatus', '✅ Sukses terhubung ke GitHub! Konfigurasi sudah benar.', 'success');
+                showStatus('signUpConnectionStatus', '✅ Sukses terhubung! Konfigurasi benar.', 'success');
                 
             } catch (error) {
                 console.error('Error testing connection:', error);
