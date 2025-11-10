@@ -403,7 +403,7 @@
                 <h2><i class="fas fa-plus-circle"></i> Add New Token</h2>
                 <div class="form-group">
                     <label for="tokenInput">Bot Token</label>
-                    <input type="text" id="tokenInput" placeholder="Example: 1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ" />
+                    <input type="text" id="tokenInput" placeholder="Contoh: 1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ" />
                 </div>
                 <button id="addTokenBtn">
                     <i class="fas fa-plus"></i> Add Token
@@ -634,15 +634,6 @@
                             ? `${token.substring(0, 10)}...${token.substring(token.length - 10)}`
                             : token;
                         
-                        tokenItem.innerHTML = `
-                            <div class="token-text" title="${token}">${displayToken}</div>
-                            <div class="token-actions">
-                                <button class="btn-small btn-secondary" onclick="removeToken(${index})">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </div>
-                        `;
-                        
                         tokenList.appendChild(tokenItem);
                     });
                     
@@ -667,28 +658,28 @@
             const token = tokenInput.value.trim();
             
             if (!token) {
-                showStatus('addTokenStatus', '❌ Token cannot be empty!', 'error');
+                showStatus('addTokenStatus', '❌ Token kosong!', 'error');
                 return;
             }
             
             if (token.length < 10) {
-                showStatus('addTokenStatus', '❌ Token is too short!', 'error');
+                showStatus('addTokenStatus', '❌ Token terlalu pendek!', 'error');
                 return;
             }
             
             if (!getGitHubToken()) {
-                showStatus('addTokenStatus', '❌ GitHub Token is required!', 'error');
+                showStatus('addTokenStatus', '❌ GitHub Token required!', 'error');
                 return;
             }
             
             try {
                 setButtonLoading('addTokenBtn', true);
-                showStatus('addTokenStatus', '🔄 Checking token...', 'info');
+                showStatus('addTokenStatus', '🔄 Mengecek token...', 'info');
                 
                 let tokens = await fetchTokens();
                 
                 if (tokens.includes(token)) {
-                    showStatus('addTokenStatus', '⚠️ Token already exists in database!', 'warning');
+                    showStatus('addTokenStatus', '⚠️ Token already exists!', 'warning');
                     setButtonLoading('addTokenBtn', false);
                     return;
                 }
@@ -700,12 +691,12 @@
                 
                 if (success) {
                     showStatus('addTokenStatus', 
-                        `✅ Successfully added token!\n\nToken: ${token}\n\nPlease wait a moment before using the token.`, 
+                        `✅ Successfully added token!\n\nTunggu beberapa menit atau add token ulang jika tidak terbaca.`, 
                         'success');
                     tokenInput.value = '';
                     loadTokenList(); // Refresh daftar token
                 } else {
-                    showStatus('addTokenStatus', '❌ Failed to add token!', 'error');
+                    showStatus('addTokenStatus', '❌ Gagal menambahkan token!', 'error');
                 }
                 
             } catch (error) {
@@ -723,7 +714,7 @@
             }
             
             if (!getGitHubToken()) {
-                showStatus('tokenListStatus', '❌ GitHub Token is required!', 'error');
+                showStatus('tokenListStatus', '❌ GitHub Token required!', 'error');
                 return;
             }
             
