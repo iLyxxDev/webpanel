@@ -1,30 +1,446 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Login Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Management Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            color: #a5b4fc;
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .card h2 {
+            margin-bottom: 15px;
+            color: #4cc9f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h2 i {
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a5b4fc;
+            font-weight: 500;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #4cc9f0;
+            box-shadow: 0 0 0 2px rgba(76, 201, 240, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, #f72585, #b5179e);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
+        }
+        
+        .status-message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .success {
+            background: rgba(72, 187, 120, 0.2);
+            border: 1px solid rgba(72, 187, 120, 0.5);
+            color: #48bb78;
+        }
+        
+        .error {
+            background: rgba(245, 101, 101, 0.2);
+            border: 1px solid rgba(245, 101, 101, 0.5);
+            color: #f56565;
+        }
+        
+        .warning {
+            background: rgba(246, 173, 85, 0.2);
+            border: 1px solid rgba(246, 173, 85, 0.5);
+            color: #f6ad55;
+        }
+        
+        .info {
+            background: rgba(66, 153, 225, 0.2);
+            border: 1px solid rgba(66, 153, 225, 0.5);
+            color: #4299e1;
+        }
+        
+        .token-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .token-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #4361ee;
+        }
+        
+        .token-text {
+            font-family: monospace;
+            word-break: break-all;
+            flex: 1;
+            margin-right: 15px;
+        }
+        
+        .token-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #a5b4fc;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .token-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .token-actions {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <h2>Login</h2>
-  <form action="/login" method="POST">
-    <label>Email:</label><br>
-    <input type="email" name="email" required><br><br>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-key"></i> Token Management</h1>
+            <p class="subtitle">Kelola token bot Telegram Anda dengan mudah</p>
+        </header>
+        
+        <div class="card">
+            <h2><i class="fas fa-plus-circle"></i> Tambah Token Baru</h2>
+            <div class="form-group">
+                <label for="tokenInput">Masukkan Token Bot:</label>
+                <input type="text" id="tokenInput" placeholder="Contoh: 1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ" />
+            </div>
+            <button id="addTokenBtn">
+                <i class="fas fa-plus"></i> Tambah Token
+            </button>
+            <div id="addTokenStatus" class="status-message"></div>
+        </div>
+        
+        <div class="card">
+            <h2><i class="fas fa-list"></i> Daftar Token</h2>
+            <div class="form-group">
+                <button id="refreshTokensBtn">
+                    <i class="fas fa-sync-alt"></i> Muat Ulang Token
+                </button>
+            </div>
+            <div id="tokenList" class="token-list">
+                <!-- Daftar token akan dimuat di sini -->
+            </div>
+            <div id="tokenListStatus" class="status-message"></div>
+        </div>
+        
+        <div class="footer">
+            <p>Token Management Dashboard &copy; 2023</p>
+        </div>
+    </div>
 
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
-
-    <button type="submit">Login</button>
-  </form>
-
-  <h2>Register</h2>
-  <form action="/register" method="POST">
-    <label>Email:</label><br>
-    <input type="email" name="email" required><br><br>
-
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
-
-    <button type="submit">Register</button>
-  </form>
+    <script>
+        // Simulasi fungsi-fungsi dari kode bot
+        const PATH = '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';
+        const RAW = 'https://raw.githubusercontent.com/iLyxxDev/database/refs/heads/main/token';
+        const API = 'https://api.github.com/repos/iLyxxDev/database/contents/token';
+        
+        // Simulasi fetchToken
+        async function fetchToken() {
+            try {
+                // Dalam implementasi nyata, ini akan memanggil API GitHub
+                // Untuk simulasi, kita akan menggunakan localStorage
+                const tokens = JSON.parse(localStorage.getItem('tokens') || '[]');
+                return tokens;
+            } catch (error) {
+                console.error('Error fetching tokens:', error);
+                return [];
+            }
+        }
+        
+        // Simulasi updateTokens
+        async function updateTokens(newToken) {
+            try {
+                // Dalam implementasi nyata, ini akan memanggil API GitHub
+                // Untuk simulasi, kita akan menggunakan localStorage
+                localStorage.setItem('tokens', JSON.stringify(newToken));
+                return true;
+            } catch (error) {
+                console.error('Error updating tokens:', error);
+                return false;
+            }
+        }
+        
+        // Fungsi untuk menampilkan pesan status
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status-message ${type}`;
+            element.style.display = 'block';
+            
+            // Sembunyikan pesan setelah 5 detik untuk pesan sukses
+            if (type === 'success') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Fungsi untuk memuat daftar token
+        async function loadTokenList() {
+            const tokenList = document.getElementById('tokenList');
+            const statusElement = document.getElementById('tokenListStatus');
+            
+            tokenList.innerHTML = '<div class="loading"></div> Memuat token...';
+            
+            try {
+                const tokens = await fetchToken();
+                
+                if (tokens.length === 0) {
+                    tokenList.innerHTML = '<div class="status-message info">Belum ada token yang ditambahkan.</div>';
+                    return;
+                }
+                
+                tokenList.innerHTML = '';
+                
+                tokens.forEach((token, index) => {
+                    const tokenItem = document.createElement('div');
+                    tokenItem.className = 'token-item';
+                    
+                    tokenItem.innerHTML = `
+                        <div class="token-text">${token}</div>
+                        <div class="token-actions">
+                            <button class="btn-small btn-secondary" onclick="removeToken(${index})">
+                                <i class="fas fa-trash"></i> Hapus
+                            </button>
+                        </div>
+                    `;
+                    
+                    tokenList.appendChild(tokenItem);
+                });
+                
+                showStatus('tokenListStatus', `Berhasil memuat ${tokens.length} token.`, 'success');
+            } catch (error) {
+                tokenList.innerHTML = '';
+                showStatus('tokenListStatus', 'Gagal memuat token: ' + error.message, 'error');
+            }
+        }
+        
+        // Fungsi untuk menambah token
+        async function addToken() {
+            const tokenInput = document.getElementById('tokenInput');
+            const token = tokenInput.value.trim();
+            const statusElement = document.getElementById('addTokenStatus');
+            
+            if (!token) {
+                showStatus('addTokenStatus', '❌ Token tidak boleh kosong!', 'error');
+                return;
+            }
+            
+            if (token.length < 10) {
+                showStatus('addTokenStatus', '❌ Token terlalu pendek!', 'error');
+                return;
+            }
+            
+            try {
+                showStatus('addTokenStatus', '🔄 Mengecek token...', 'info');
+                
+                let tokens = await fetchToken();
+                
+                if (tokens.includes(token)) {
+                    showStatus('addTokenStatus', '⚠️ Token sudah ada!', 'warning');
+                    return;
+                }
+                
+                showStatus('addTokenStatus', '🔄 Menambahkan token ke database...', 'info');
+                
+                tokens.push(token);
+                const success = await updateTokens(tokens);
+                
+                if (success) {
+                    showStatus('addTokenStatus', 
+                        `✅ Sukses menambahkan Token!\n\n${token}\n\nSilahkan tunggu 5 menit sebelum run.`, 
+                        'success');
+                    tokenInput.value = '';
+                    loadTokenList(); // Refresh daftar token
+                } else {
+                    showStatus('addTokenStatus', '❌ Gagal menambahkan token!\nTerjadi error saat update database.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error adding token:', error);
+                showStatus('addTokenStatus', '❌ Terjadi error saat memproses token!', 'error');
+            }
+        }
+        
+        // Fungsi untuk menghapus token
+        async function removeToken(index) {
+            if (!confirm('Apakah Anda yakin ingin menghapus token ini?')) {
+                return;
+            }
+            
+            try {
+                let tokens = await fetchToken();
+                tokens.splice(index, 1);
+                const success = await updateTokens(tokens);
+                
+                if (success) {
+                    showStatus('tokenListStatus', '✅ Token berhasil dihapus!', 'success');
+                    loadTokenList(); // Refresh daftar token
+                } else {
+                    showStatus('tokenListStatus', '❌ Gagal menghapus token!', 'error');
+                }
+            } catch (error) {
+                console.error('Error removing token:', error);
+                showStatus('tokenListStatus', '❌ Terjadi error saat menghapus token!', 'error');
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('addTokenBtn').addEventListener('click', addToken);
+        document.getElementById('refreshTokensBtn').addEventListener('click', loadTokenList);
+        
+        // Muat daftar token saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', loadTokenList);
+    </script>
 </body>
 </html>
