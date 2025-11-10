@@ -871,11 +871,11 @@
             
             try {
                 setButtonLoading('testSignUpConnectionBtn', true);
-                showStatus('signUpConnectionStatus', '🔄 Testing connection to GitHub...', 'info');
+                showStatus('signUpConnectionStatus', '🔄 Mengecek koneksi...', 'info');
                 
                 // Coba akses repository user data
                 await getUserFileSHA(config, githubToken);
-                showStatus('signUpConnectionStatus', '✅ Sukses terhubung! Konfigurasi benar.', 'success');
+                showStatus('signUpConnectionStatus', '✅ Sukses terhubung!', 'success');
                 
             } catch (error) {
                 console.error('Error testing connection:', error);
@@ -915,7 +915,7 @@
             
             try {
                 setButtonLoading('signUpBtn', true);
-                showStatus('signUpStatus', '🔄 Memeriksa ketersediaan username...', 'info');
+                showStatus('signUpStatus', '🔄 Memeriksa username...', 'info');
                 
                 let users = await fetchUsers(config, githubToken);
                 
@@ -925,13 +925,13 @@
                     return;
                 }
                 
-                showStatus('signUpStatus', '🔄 Menyimpan data user ke GitHub...', 'info');
+                showStatus('signUpStatus', '🔄 Menyimpan data user...', 'info');
                 
                 // Tambah user baru
                 users[username] = { 
                     password: password,
                     createdAt: new Date().toISOString(),
-                    };
+                };
                 
                 const success = await updateUsers(users, config, githubToken);
                 
@@ -942,6 +942,7 @@
                     document.getElementById('signUpUsername').value = '';
                     document.getElementById('signUpPassword').value = '';
                     document.getElementById('signUpConfirmPassword').value = '';
+                    document.getElementById('signUpGithubToken').value = '';
                     
                     // Switch ke tab sign in
                     document.getElementById('signInTab').click();
