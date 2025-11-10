@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Token Management Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -20,7 +21,7 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -112,7 +113,7 @@
             gap: 8px;
         }
         
-        button:hover {
+        button:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
         }
@@ -121,11 +122,16 @@
             transform: translateY(0);
         }
         
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
         .btn-secondary {
             background: linear-gradient(90deg, #f72585, #b5179e);
         }
         
-        .btn-secondary:hover {
+        .btn-secondary:hover:not(:disabled) {
             box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
         }
         
@@ -133,7 +139,7 @@
             padding: 12px 15px;
             border-radius: 8px;
             margin-top: 15px;
-            display: none;
+            white-space: pre-line;
         }
         
         .success {
@@ -163,6 +169,7 @@
         .token-list {
             max-height: 300px;
             overflow-y: auto;
+            margin-top: 15px;
         }
         
         .token-item {
@@ -214,6 +221,18 @@
             font-size: 0.9rem;
         }
         
+        .config-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .config-section h3 {
+            margin-bottom: 10px;
+            color: #4cc9f0;
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 10px;
@@ -245,8 +264,32 @@
     <div class="container">
         <header>
             <h1><i class="fas fa-key"></i> Token Management</h1>
-            <p class="subtitle">Kelola token bot Telegram Anda dengan mudah</p>
+            <p class="subtitle">Kelola token bot Telegram Anda dengan GitHub API</p>
         </header>
+        
+        <div class="card">
+            <h2><i class="fas fa-cog"></i> Konfigurasi GitHub</h2>
+            <div class="config-section">
+                <div class="form-group">
+                    <label for="githubToken">GitHub Personal Access Token:</label>
+                    <input type="password" id="githubToken" placeholder="Masukkan GitHub PAT Anda" value="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" />
+                    <small style="color: #a5b4fc; margin-top: 5px; display: block;">
+                        Token ini digunakan untuk mengakses repository GitHub
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="repoInfo">Repository Info:</label>
+                    <input type="text" id="repoInfo" value="iLyxxDev/database" readonly />
+                    <small style="color: #a5b4fc; margin-top: 5px; display: block;">
+                        Repository target untuk menyimpan token
+                    </small>
+                </div>
+                <button id="testConnectionBtn">
+                    <i class="fas fa-plug"></i> Test Koneksi GitHub
+                </button>
+                <div id="connectionStatus" class="status-message"></div>
+            </div>
+        </div>
         
         <div class="card">
             <h2><i class="fas fa-plus-circle"></i> Tambah Token Baru</h2>
@@ -274,40 +317,22 @@
         </div>
         
         <div class="footer">
-            <p>Token Management Dashboard &copy; 2023</p>
+            <p>Token Management Dashboard &copy; 2023 - Terintegrasi dengan GitHub API</p>
         </div>
     </div>
 
     <script>
-        // Simulasi fungsi-fungsi dari kode bot
-        const PATH = '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';
-        const RAW = 'https://raw.githubusercontent.com/iLyxxDev/database/refs/heads/main/token';
-        const API = 'https://api.github.com/repos/iLyxxDev/database/contents/token';
+        // Konstanta untuk GitHub API
+        const RAW_URL = 'https://raw.githubusercontent.com/iLyxxDev/database/refs/heads/main/token';
+        const API_URL = 'https://api.github.com/repos/iLyxxDev/database/contents/token';
         
-        // Simulasi fetchToken
-        async function fetchToken() {
-            try {
-                // Dalam implementasi nyata, ini akan memanggil API GitHub
-                // Untuk simulasi, kita akan menggunakan localStorage
-                const tokens = JSON.parse(localStorage.getItem('tokens') || '[]');
-                return tokens;
-            } catch (error) {
-                console.error('Error fetching tokens:', error);
-                return [];
-            }
-        }
+        // Variabel global untuk menyimpan data
+        let currentTokens = [];
+        let currentFileSHA = null;
         
-        // Simulasi updateTokens
-        async function updateTokens(newToken) {
-            try {
-                // Dalam implementasi nyata, ini akan memanggil API GitHub
-                // Untuk simulasi, kita akan menggunakan localStorage
-                localStorage.setItem('tokens', JSON.stringify(newToken));
-                return true;
-            } catch (error) {
-                console.error('Error updating tokens:', error);
-                return false;
-            }
+        // Fungsi untuk mendapatkan GitHub Token dari input
+        function getGitHubToken() {
+            return document.getElementById('githubToken').value.trim();
         }
         
         // Fungsi untuk menampilkan pesan status
@@ -325,43 +350,144 @@
             }
         }
         
+        // Fungsi untuk menampilkan loading state pada button
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (isLoading) {
+                button.disabled = true;
+                const originalText = button.innerHTML;
+                button.setAttribute('data-original-text', originalText);
+                button.innerHTML = '<div class="loading"></div> Memproses...';
+            } else {
+                button.disabled = false;
+                const originalText = button.getAttribute('data-original-text');
+                if (originalText) {
+                    button.innerHTML = originalText;
+                }
+            }
+        }
+        
+        // Fungsi untuk mengambil token dari GitHub
+        async function fetchTokens() {
+            try {
+                const response = await axios.get(RAW_URL, {
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                
+                if (response.data && response.data.tokens) {
+                    currentTokens = response.data.tokens;
+                    return currentTokens;
+                } else {
+                    currentTokens = [];
+                    return [];
+                }
+            } catch (error) {
+                console.error('Error fetching tokens:', error);
+                throw new Error('Gagal mengambil token dari GitHub: ' + error.message);
+            }
+        }
+        
+        // Fungsi untuk mendapatkan SHA file saat ini
+        async function getFileSHA() {
+            try {
+                const githubToken = getGitHubToken();
+                const response = await axios.get(API_URL, {
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+                currentFileSHA = response.data.sha;
+                return currentFileSHA;
+            } catch (error) {
+                console.error('Error getting file SHA:', error);
+                throw new Error('Gagal mendapatkan SHA file: ' + error.message);
+            }
+        }
+        
+        // Fungsi untuk memperbarui token di GitHub
+        async function updateTokens(newTokens) {
+            try {
+                const githubToken = getGitHubToken();
+                
+                // Dapatkan SHA terbaru
+                await getFileSHA();
+                
+                const updatedContent = Buffer.from(
+                    JSON.stringify({ tokens: newTokens }, null, 2)
+                ).toString("base64");
+                
+                const response = await axios.put(
+                    API_URL,
+                    {
+                        message: "Update token list via Web Dashboard",
+                        content: updatedContent,
+                        sha: currentFileSHA
+                    },
+                    {
+                        headers: {
+                            'Authorization': `token ${githubToken}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                
+                currentTokens = newTokens;
+                return true;
+            } catch (error) {
+                console.error('Error updating tokens:', error);
+                throw new Error('Gagal memperbarui token di GitHub: ' + error.message);
+            }
+        }
+        
         // Fungsi untuk memuat daftar token
         async function loadTokenList() {
             const tokenList = document.getElementById('tokenList');
             const statusElement = document.getElementById('tokenListStatus');
             
-            tokenList.innerHTML = '<div class="loading"></div> Memuat token...';
+            tokenList.innerHTML = '<div class="loading"></div> Memuat token dari GitHub...';
+            setButtonLoading('refreshTokensBtn', true);
             
             try {
-                const tokens = await fetchToken();
+                const tokens = await fetchTokens();
                 
                 if (tokens.length === 0) {
                     tokenList.innerHTML = '<div class="status-message info">Belum ada token yang ditambahkan.</div>';
-                    return;
+                    showStatus('tokenListStatus', 'Tidak ada token yang ditemukan di repository.', 'info');
+                } else {
+                    tokenList.innerHTML = '';
+                    
+                    tokens.forEach((token, index) => {
+                        const tokenItem = document.createElement('div');
+                        tokenItem.className = 'token-item';
+                        
+                        // Sembunyikan sebagian token untuk keamanan
+                        const displayToken = token.length > 20 
+                            ? `${token.substring(0, 10)}...${token.substring(token.length - 10)}`
+                            : token;
+                        
+                        tokenItem.innerHTML = `
+                            <div class="token-text" title="${token}">${displayToken}</div>
+                            <div class="token-actions">
+                                <button class="btn-small btn-secondary" onclick="removeToken(${index})">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </div>
+                        `;
+                        
+                        tokenList.appendChild(tokenItem);
+                    });
+                    
+                    showStatus('tokenListStatus', `Berhasil memuat ${tokens.length} token dari GitHub.`, 'success');
                 }
-                
-                tokenList.innerHTML = '';
-                
-                tokens.forEach((token, index) => {
-                    const tokenItem = document.createElement('div');
-                    tokenItem.className = 'token-item';
-                    
-                    tokenItem.innerHTML = `
-                        <div class="token-text">${token}</div>
-                        <div class="token-actions">
-                            <button class="btn-small btn-secondary" onclick="removeToken(${index})">
-                                <i class="fas fa-trash"></i> Hapus
-                            </button>
-                        </div>
-                    `;
-                    
-                    tokenList.appendChild(tokenItem);
-                });
-                
-                showStatus('tokenListStatus', `Berhasil memuat ${tokens.length} token.`, 'success');
             } catch (error) {
                 tokenList.innerHTML = '';
-                showStatus('tokenListStatus', 'Gagal memuat token: ' + error.message, 'error');
+                showStatus('tokenListStatus', error.message, 'error');
+            } finally {
+                setButtonLoading('refreshTokensBtn', false);
             }
         }
         
@@ -369,7 +495,6 @@
         async function addToken() {
             const tokenInput = document.getElementById('tokenInput');
             const token = tokenInput.value.trim();
-            const statusElement = document.getElementById('addTokenStatus');
             
             if (!token) {
                 showStatus('addTokenStatus', '❌ Token tidak boleh kosong!', 'error');
@@ -381,34 +506,43 @@
                 return;
             }
             
+            if (!getGitHubToken()) {
+                showStatus('addTokenStatus', '❌ GitHub Token belum diisi!', 'error');
+                return;
+            }
+            
             try {
+                setButtonLoading('addTokenBtn', true);
                 showStatus('addTokenStatus', '🔄 Mengecek token...', 'info');
                 
-                let tokens = await fetchToken();
+                let tokens = await fetchTokens();
                 
                 if (tokens.includes(token)) {
-                    showStatus('addTokenStatus', '⚠️ Token sudah ada!', 'warning');
+                    showStatus('addTokenStatus', '⚠️ Token sudah ada di database!', 'warning');
+                    setButtonLoading('addTokenBtn', false);
                     return;
                 }
                 
-                showStatus('addTokenStatus', '🔄 Menambahkan token ke database...', 'info');
+                showStatus('addTokenStatus', '🔄 Menambahkan token ke database GitHub...', 'info');
                 
                 tokens.push(token);
                 const success = await updateTokens(tokens);
                 
                 if (success) {
                     showStatus('addTokenStatus', 
-                        `✅ Sukses menambahkan Token!\n\n${token}\n\nSilahkan tunggu 5 menit sebelum run.`, 
+                        `✅ Sukses menambahkan Token!\n\nToken: ${token}\n\nSilahkan tunggu beberapa saat sebelum menggunakan token.`, 
                         'success');
                     tokenInput.value = '';
                     loadTokenList(); // Refresh daftar token
                 } else {
-                    showStatus('addTokenStatus', '❌ Gagal menambahkan token!\nTerjadi error saat update database.', 'error');
+                    showStatus('addTokenStatus', '❌ Gagal menambahkan token!', 'error');
                 }
                 
             } catch (error) {
                 console.error('Error adding token:', error);
-                showStatus('addTokenStatus', '❌ Terjadi error saat memproses token!', 'error');
+                showStatus('addTokenStatus', '❌ ' + error.message, 'error');
+            } finally {
+                setButtonLoading('addTokenBtn', false);
             }
         }
         
@@ -418,29 +552,68 @@
                 return;
             }
             
+            if (!getGitHubToken()) {
+                showStatus('tokenListStatus', '❌ GitHub Token belum diisi!', 'error');
+                return;
+            }
+            
             try {
-                let tokens = await fetchToken();
+                let tokens = await fetchTokens();
+                const removedToken = tokens[index];
                 tokens.splice(index, 1);
                 const success = await updateTokens(tokens);
                 
                 if (success) {
-                    showStatus('tokenListStatus', '✅ Token berhasil dihapus!', 'success');
+                    showStatus('tokenListStatus', `✅ Token berhasil dihapus!\n\nToken: ${removedToken}`, 'success');
                     loadTokenList(); // Refresh daftar token
                 } else {
                     showStatus('tokenListStatus', '❌ Gagal menghapus token!', 'error');
                 }
             } catch (error) {
                 console.error('Error removing token:', error);
-                showStatus('tokenListStatus', '❌ Terjadi error saat menghapus token!', 'error');
+                showStatus('tokenListStatus', '❌ ' + error.message, 'error');
+            }
+        }
+        
+        // Fungsi untuk menguji koneksi ke GitHub
+        async function testGitHubConnection() {
+            if (!getGitHubToken()) {
+                showStatus('connectionStatus', '❌ GitHub Token belum diisi!', 'error');
+                return;
+            }
+            
+            try {
+                setButtonLoading('testConnectionBtn', true);
+                showStatus('connectionStatus', '🔄 Menguji koneksi ke GitHub...', 'info');
+                
+                // Coba akses repository
+                await getFileSHA();
+                showStatus('connectionStatus', '✅ Koneksi ke GitHub berhasil! Repository dapat diakses.', 'success');
+                
+            } catch (error) {
+                console.error('Error testing connection:', error);
+                showStatus('connectionStatus', '❌ Gagal terhubung ke GitHub: ' + error.message, 'error');
+            } finally {
+                setButtonLoading('testConnectionBtn', false);
             }
         }
         
         // Event listeners
         document.getElementById('addTokenBtn').addEventListener('click', addToken);
         document.getElementById('refreshTokensBtn').addEventListener('click', loadTokenList);
+        document.getElementById('testConnectionBtn').addEventListener('click', testGitHubConnection);
         
         // Muat daftar token saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', loadTokenList);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTokenList();
+        });
+        
+        // Tambah event listener untuk Enter key pada input token
+        document.getElementById('tokenInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addToken();
+            }
+        });
     </script>
 </body>
 </html>
