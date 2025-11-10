@@ -1,4 +1,14 @@
 {
   "users": {
+    "naelisy": {
+      "password": "12345",
+      "createdAt": "2025-11-10T19:43:15.828Z",
+      "repoConfig": {
+        "owner": "iLyxxDev",
+        "repo": "webpanel",
+        "branch": "main",
+        "file": "users"
+      }
+    }
   }
 }
