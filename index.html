@@ -633,6 +633,10 @@
                         const displayToken = token.length > 20 
                             ? `${token.substring(0, 10)}...${token.substring(token.length - 10)}`
                             : token;
+
+                        tokenItem.innerHTML = `
+                            <div class="token-text" title="${token}">${displayToken}</div>
+                            `;
                         
                         tokenList.appendChild(tokenItem);
                     });
