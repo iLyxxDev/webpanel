@@ -10,112 +10,135 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
+            background-color: #f8f9fa;
+            color: #2c3e50;
             min-height: 100vh;
-            padding: 20px;
+            line-height: 1.6;
         }
         
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 40px 20px;
         }
         
         header {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e9ecef;
         }
         
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
+            font-weight: 300;
             margin-bottom: 10px;
-            background: linear-gradient(90deg, #4cc9f0, #4361ee);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #2c3e50;
+            letter-spacing: -0.5px;
         }
         
         .subtitle {
-            color: #a5b4fc;
+            color: #6c757d;
             font-size: 1.1rem;
+            font-weight: 400;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .card {
-            background: rgba(255, 255, 255, 0.05);
+            background: #ffffff;
             border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
         }
         
         .card h2 {
-            margin-bottom: 15px;
-            color: #4cc9f0;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 1.4rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .card h2 i {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
+            color: #495057;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         label {
             display: block;
             margin-bottom: 8px;
-            color: #a5b4fc;
+            color: #495057;
             font-weight: 500;
+            font-size: 0.95rem;
         }
         
         input, textarea, select {
             width: 100%;
-            padding: 12px 15px;
+            padding: 14px 16px;
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(0, 0, 0, 0.3);
-            color: white;
+            border: 1px solid #dee2e6;
+            background: #ffffff;
+            color: #2c3e50;
             font-size: 1rem;
             transition: all 0.3s ease;
         }
         
         input:focus, textarea:focus, select:focus {
             outline: none;
-            border-color: #4cc9f0;
-            box-shadow: 0 0 0 2px rgba(76, 201, 240, 0.2);
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
         }
         
         button {
-            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            background: #2c3e50;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 14px 28px;
             border-radius: 8px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            width: 100%;
         }
         
         button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+            background: #34495e;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
         }
         
         button:active {
@@ -123,71 +146,85 @@
         }
         
         button:disabled {
-            opacity: 0.6;
+            background: #6c757d;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .btn-secondary {
-            background: linear-gradient(90deg, #f72585, #b5179e);
+            background: #6c757d;
         }
         
         .btn-secondary:hover:not(:disabled) {
-            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
+            background: #5a6268;
         }
         
         .status-message {
-            padding: 12px 15px;
+            padding: 16px;
             border-radius: 8px;
-            margin-top: 15px;
+            margin-top: 20px;
             white-space: pre-line;
+            font-size: 0.95rem;
+            border-left: 4px solid transparent;
         }
         
         .success {
-            background: rgba(72, 187, 120, 0.2);
-            border: 1px solid rgba(72, 187, 120, 0.5);
-            color: #48bb78;
+            background: #f8fff9;
+            border-color: #28a745;
+            color: #155724;
         }
         
         .error {
-            background: rgba(245, 101, 101, 0.2);
-            border: 1px solid rgba(245, 101, 101, 0.5);
-            color: #f56565;
+            background: #fff8f8;
+            border-color: #dc3545;
+            color: #721c24;
         }
         
         .warning {
-            background: rgba(246, 173, 85, 0.2);
-            border: 1px solid rgba(246, 173, 85, 0.5);
-            color: #f6ad55;
+            background: #fffef8;
+            border-color: #ffc107;
+            color: #856404;
         }
         
         .info {
-            background: rgba(66, 153, 225, 0.2);
-            border: 1px solid rgba(66, 153, 225, 0.5);
-            color: #4299e1;
+            background: #f8fdff;
+            border-color: #17a2b8;
+            color: #0c5460;
         }
         
         .token-list {
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
-            margin-top: 15px;
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
         }
         
         .token-item {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 4px solid #4361ee;
+            transition: background-color 0.2s ease;
+        }
+        
+        .token-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .token-item:last-child {
+            border-bottom: none;
         }
         
         .token-text {
-            font-family: monospace;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             word-break: break-all;
             flex: 1;
-            margin-right: 15px;
+            margin-right: 20px;
+            font-size: 0.9rem;
+            color: #495057;
         }
         
         .token-actions {
@@ -196,17 +233,18 @@
         }
         
         .btn-small {
-            padding: 6px 12px;
+            padding: 8px 16px;
             font-size: 0.85rem;
+            width: auto;
         }
         
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            width: 18px;
+            height: 18px;
+            border: 2px solid transparent;
             border-radius: 50%;
-            border-top-color: #fff;
+            border-top-color: #ffffff;
             animation: spin 1s ease-in-out infinite;
         }
         
@@ -216,34 +254,43 @@
         
         .footer {
             text-align: center;
-            margin-top: 30px;
-            color: #a5b4fc;
+            margin-top: 60px;
+            color: #6c757d;
             font-size: 0.9rem;
+            padding-top: 30px;
+            border-top: 1px solid #e9ecef;
         }
         
         .config-section {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px;
+            background: #f8f9fa;
+            padding: 20px;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
         }
         
         .config-section h3 {
-            margin-bottom: 10px;
-            color: #4cc9f0;
+            margin-bottom: 15px;
+            color: #495057;
+            font-weight: 500;
+            font-size: 1.1rem;
         }
         
         .troubleshoot-section {
-            background: rgba(246, 173, 85, 0.1);
-            padding: 15px;
+            background: #fffef8;
+            padding: 20px;
             border-radius: 8px;
-            margin-top: 15px;
-            border-left: 4px solid #f6ad55;
+            margin-top: 20px;
+            border: 1px solid #ffeaa7;
         }
         
         .troubleshoot-section h4 {
-            color: #f6ad55;
-            margin-bottom: 10px;
+            color: #856404;
+            margin-bottom: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .troubleshoot-list {
@@ -253,40 +300,45 @@
         
         .troubleshoot-list li {
             margin-bottom: 8px;
-            padding-left: 20px;
+            padding-left: 24px;
             position: relative;
+            color: #856404;
         }
         
         .troubleshoot-list li:before {
             content: "•";
-            color: #f6ad55;
+            color: #ffc107;
             position: absolute;
-            left: 0;
+            left: 12px;
+            font-weight: bold;
         }
         
-        @media (max-width: 600px) {
-            .container {
-                padding: 10px;
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #dee2e6;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
             }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .card {
-                padding: 15px;
-            }
-            
-            .token-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .token-actions {
-                margin-top: 10px;
-                width: 100%;
-                justify-content: flex-end;
-            }
+        }
+        
+        .card-full {
+            grid-column: 1 / -1;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -295,84 +347,89 @@
     <div class="container">
         <header>
             <h1><i class="fas fa-key"></i> Token Management</h1>
-            <p class="subtitle">Kelola token bot Telegram Anda dengan GitHub API</p>
+            <p class="subtitle">Manage your Telegram bot tokens with GitHub integration</p>
         </header>
         
-        <div class="card">
-            <h2><i class="fas fa-cog"></i> Konfigurasi GitHub</h2>
-            <div class="config-section">
-                <div class="form-group">
-                    <label for="githubToken">GitHub Personal Access Token:</label>
-                    <input type="password" id="githubToken" placeholder="Masukkan GitHub PAT Anda" />
-                    <small style="color: #a5b4fc; margin-top: 5px; display: block;">
-                        Token ini digunakan untuk mengakses repository GitHub. Pastikan token memiliki permissions "repo"
-                    </small>
+        <div class="card-grid">
+            <div class="card">
+                <h2><i class="fas fa-cog"></i> Configuration</h2>
+                <div class="config-section">
+                    <div class="form-group">
+                        <label for="githubToken">GitHub Personal Access Token</label>
+                        <input type="password" id="githubToken" placeholder="Enter your GitHub PAT" />
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="repoOwner">Repository Owner</label>
+                            <input type="text" id="repoOwner" placeholder="iLyxxDev" value="iLyxxDev" />
+                        </div>
+                        <div class="form-group">
+                            <label for="repoName">Repository Name</label>
+                            <input type="text" id="repoName" placeholder="database" value="database" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="branchName">Branch</label>
+                            <input type="text" id="branchName" placeholder="main" value="main" />
+                        </div>
+                        <div class="form-group">
+                            <label for="fileName">File Name</label>
+                            <input type="text" id="fileName" placeholder="token" value="token" />
+                        </div>
+                    </div>
+                    <button id="testConnectionBtn">
+                        <i class="fas fa-plug"></i> Test Connection
+                    </button>
+                    <div id="connectionStatus" class="status-message"></div>
                 </div>
-                <div class="form-group">
-                    <label for="repoOwner">Repository Owner:</label>
-                    <input type="text" id="repoOwner" placeholder="iLyxxDev" value="iLyxxDev" />
+                
+                <div class="troubleshoot-section">
+                    <h4><i class="fas fa-tools"></i> Connection Help</h4>
+                    <ul class="troubleshoot-list">
+                        <li>Ensure GitHub Token has "repo" permissions</li>
+                        <li>Check your internet connection</li>
+                        <li>Verify repository and branch exist</li>
+                        <li>Use CORS proxy if experiencing CORS issues</li>
+                    </ul>
+                    <button id="useProxyBtn" class="btn-secondary" style="margin-top: 15px;">
+                        <i class="fas fa-server"></i> Toggle CORS Proxy
+                    </button>
+                    <div id="proxyStatus" class="status-message"></div>
                 </div>
-                <div class="form-group">
-                    <label for="repoName">Repository Name:</label>
-                    <input type="text" id="repoName" placeholder="database" value="database" />
-                </div>
-                <div class="form-group">
-                    <label for="branchName">Branch:</label>
-                    <input type="text" id="branchName" placeholder="main" value="main" />
-                </div>
-                <div class="form-group">
-                    <label for="fileName">File Name:</label>
-                    <input type="text" id="fileName" placeholder="token" value="token" />
-                </div>
-                <button id="testConnectionBtn">
-                    <i class="fas fa-plug"></i> Test Koneksi GitHub
-                </button>
-                <div id="connectionStatus" class="status-message"></div>
             </div>
             
-            <div class="troubleshoot-section">
-                <h4><i class="fas fa-tools"></i> Troubleshooting Koneksi</h4>
-                <ul class="troubleshoot-list">
-                    <li>Pastikan GitHub Token memiliki permission "repo"</li>
-                    <li>Periksa koneksi internet Anda</li>
-                    <li>Pastikan repository dan branch ada</li>
-                    <li>Coba gunakan CORS proxy jika ada masalah CORS</li>
-                    <li>Periksa console browser untuk error detail (F12)</li>
-                </ul>
-                <button id="useProxyBtn" class="btn-secondary" style="margin-top: 10px;">
-                    <i class="fas fa-server"></i> Gunakan CORS Proxy
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> Add New Token</h2>
+                <div class="form-group">
+                    <label for="tokenInput">Bot Token</label>
+                    <input type="text" id="tokenInput" placeholder="Example: 1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ" />
+                </div>
+                <button id="addTokenBtn">
+                    <i class="fas fa-plus"></i> Add Token
                 </button>
-                <div id="proxyStatus" class="status-message"></div>
+                <div id="addTokenStatus" class="status-message"></div>
             </div>
         </div>
         
-        <div class="card">
-            <h2><i class="fas fa-plus-circle"></i> Tambah Token Baru</h2>
+        <div class="card card-full">
+            <h2><i class="fas fa-list"></i> Token List</h2>
             <div class="form-group">
-                <label for="tokenInput">Masukkan Token Bot:</label>
-                <input type="text" id="tokenInput" placeholder="Contoh: 1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ" />
-            </div>
-            <button id="addTokenBtn">
-                <i class="fas fa-plus"></i> Tambah Token
-            </button>
-            <div id="addTokenStatus" class="status-message"></div>
-        </div>
-        
-        <div class="card">
-            <h2><i class="fas fa-list"></i> Daftar Token</h2>
-            <div class="form-group">
-                <button id="refreshTokensBtn">
-                    <i class="fas fa-sync-alt"></i> Muat Ulang Token
+                <button id="refreshTokensBtn" style="width: auto; display: inline-flex;">
+                    <i class="fas fa-sync-alt"></i> Refresh Tokens
                 </button>
             </div>
             <div id="tokenList" class="token-list">
-                <!-- Daftar token akan dimuat di sini -->
+                <div class="empty-state">
+                    <i class="fas fa-key"></i>
+                    <p>No tokens found. Add your first token to get started.</p>
+                </div>
             </div>
             <div id="tokenListStatus" class="status-message"></div>
         </div>
         
         <div class="footer">
-            <p>Token Management Dashboard &copy; 2023 - Terintegrasi dengan GitHub API</p>
+            <p>Token Management Dashboard &copy; 2023</p>
         </div>
     </div>
 
@@ -423,7 +480,7 @@
                 button.disabled = true;
                 const originalText = button.innerHTML;
                 button.setAttribute('data-original-text', originalText);
-                button.innerHTML = '<div class="loading"></div> Memproses...';
+                button.innerHTML = '<div class="loading"></div> Processing...';
             } else {
                 button.disabled = false;
                 const originalText = button.getAttribute('data-original-text');
@@ -468,7 +525,7 @@
                     // Request was made but no response received
                     return { 
                         success: false, 
-                        error: 'Network Error: Tidak dapat terhubung ke GitHub. Periksa koneksi internet Anda.' 
+                        error: 'Network Error: Cannot connect to GitHub. Check your internet connection.' 
                     };
                 } else {
                     // Something else happened
@@ -493,7 +550,7 @@
                 const data = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
                 return data.tokens || [];
             } catch (parseError) {
-                throw new Error('Gagal memparse data token: ' + parseError.message);
+                throw new Error('Failed to parse token data: ' + parseError.message);
             }
         }
         
@@ -503,7 +560,7 @@
             const githubToken = getGitHubToken();
             
             if (!githubToken) {
-                throw new Error('GitHub Token diperlukan untuk operasi ini');
+                throw new Error('GitHub Token is required for this operation');
             }
             
             const result = await makeRequest(urls.api, { token: githubToken });
@@ -521,7 +578,7 @@
             const githubToken = getGitHubToken();
             
             if (!githubToken) {
-                throw new Error('GitHub Token diperlukan untuk operasi ini');
+                throw new Error('GitHub Token is required for this operation');
             }
             
             // Dapatkan SHA terbaru
@@ -551,15 +608,20 @@
             const tokenList = document.getElementById('tokenList');
             const statusElement = document.getElementById('tokenListStatus');
             
-            tokenList.innerHTML = '<div class="loading"></div> Memuat token dari GitHub...';
+            tokenList.innerHTML = '<div style="padding: 20px; text-align: center;"><div class="loading" style="border-top-color: #2c3e50;"></div> Loading tokens from GitHub...</div>';
             setButtonLoading('refreshTokensBtn', true);
             
             try {
                 const tokens = await fetchTokens();
                 
                 if (tokens.length === 0) {
-                    tokenList.innerHTML = '<div class="status-message info">Belum ada token yang ditambahkan.</div>';
-                    showStatus('tokenListStatus', 'Tidak ada token yang ditemukan di repository.', 'info');
+                    tokenList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-key"></i>
+                            <p>No tokens found. Add your first token to get started.</p>
+                        </div>
+                    `;
+                    showStatus('tokenListStatus', 'No tokens found in the repository.', 'info');
                 } else {
                     tokenList.innerHTML = '';
                     
@@ -576,7 +638,7 @@
                             <div class="token-text" title="${token}">${displayToken}</div>
                             <div class="token-actions">
                                 <button class="btn-small btn-secondary" onclick="removeToken(${index})">
-                                    <i class="fas fa-trash"></i> Hapus
+                                    <i class="fas fa-trash"></i> Delete
                                 </button>
                             </div>
                         `;
@@ -584,10 +646,15 @@
                         tokenList.appendChild(tokenItem);
                     });
                     
-                    showStatus('tokenListStatus', `Berhasil memuat ${tokens.length} token dari GitHub.`, 'success');
+                    showStatus('tokenListStatus', `Successfully loaded ${tokens.length} tokens from GitHub.`, 'success');
                 }
             } catch (error) {
-                tokenList.innerHTML = '';
+                tokenList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load tokens</p>
+                    </div>
+                `;
                 showStatus('tokenListStatus', error.message, 'error');
             } finally {
                 setButtonLoading('refreshTokensBtn', false);
@@ -600,45 +667,45 @@
             const token = tokenInput.value.trim();
             
             if (!token) {
-                showStatus('addTokenStatus', '❌ Token tidak boleh kosong!', 'error');
+                showStatus('addTokenStatus', '❌ Token cannot be empty!', 'error');
                 return;
             }
             
             if (token.length < 10) {
-                showStatus('addTokenStatus', '❌ Token terlalu pendek!', 'error');
+                showStatus('addTokenStatus', '❌ Token is too short!', 'error');
                 return;
             }
             
             if (!getGitHubToken()) {
-                showStatus('addTokenStatus', '❌ GitHub Token belum diisi!', 'error');
+                showStatus('addTokenStatus', '❌ GitHub Token is required!', 'error');
                 return;
             }
             
             try {
                 setButtonLoading('addTokenBtn', true);
-                showStatus('addTokenStatus', '🔄 Mengecek token...', 'info');
+                showStatus('addTokenStatus', '🔄 Checking token...', 'info');
                 
                 let tokens = await fetchTokens();
                 
                 if (tokens.includes(token)) {
-                    showStatus('addTokenStatus', '⚠️ Token sudah ada di database!', 'warning');
+                    showStatus('addTokenStatus', '⚠️ Token already exists in database!', 'warning');
                     setButtonLoading('addTokenBtn', false);
                     return;
                 }
                 
-                showStatus('addTokenStatus', '🔄 Menambahkan token ke database GitHub...', 'info');
+                showStatus('addTokenStatus', '🔄 Adding token to GitHub database...', 'info');
                 
                 tokens.push(token);
                 const success = await updateTokens(tokens);
                 
                 if (success) {
                     showStatus('addTokenStatus', 
-                        `✅ Sukses menambahkan Token!\n\nToken: ${token}\n\nSilahkan tunggu beberapa saat sebelum menggunakan token.`, 
+                        `✅ Successfully added token!\n\nToken: ${token}\n\nPlease wait a moment before using the token.`, 
                         'success');
                     tokenInput.value = '';
                     loadTokenList(); // Refresh daftar token
                 } else {
-                    showStatus('addTokenStatus', '❌ Gagal menambahkan token!', 'error');
+                    showStatus('addTokenStatus', '❌ Failed to add token!', 'error');
                 }
                 
             } catch (error) {
@@ -651,12 +718,12 @@
         
         // Fungsi untuk menghapus token
         async function removeToken(index) {
-            if (!confirm('Apakah Anda yakin ingin menghapus token ini?')) {
+            if (!confirm('Are you sure you want to delete this token?')) {
                 return;
             }
             
             if (!getGitHubToken()) {
-                showStatus('tokenListStatus', '❌ GitHub Token belum diisi!', 'error');
+                showStatus('tokenListStatus', '❌ GitHub Token is required!', 'error');
                 return;
             }
             
@@ -667,10 +734,10 @@
                 const success = await updateTokens(tokens);
                 
                 if (success) {
-                    showStatus('tokenListStatus', `✅ Token berhasil dihapus!\n\nToken: ${removedToken}`, 'success');
+                    showStatus('tokenListStatus', `✅ Token successfully deleted!\n\nToken: ${removedToken}`, 'success');
                     loadTokenList(); // Refresh daftar token
                 } else {
-                    showStatus('tokenListStatus', '❌ Gagal menghapus token!', 'error');
+                    showStatus('tokenListStatus', '❌ Failed to delete token!', 'error');
                 }
             } catch (error) {
                 console.error('Error removing token:', error);
@@ -681,17 +748,17 @@
         // Fungsi untuk menguji koneksi ke GitHub
         async function testGitHubConnection() {
             if (!getGitHubToken()) {
-                showStatus('connectionStatus', '❌ GitHub Token belum diisi!', 'error');
+                showStatus('connectionStatus', '❌ GitHub Token is required!', 'error');
                 return;
             }
             
             try {
                 setButtonLoading('testConnectionBtn', true);
-                showStatus('connectionStatus', '🔄 Menguji koneksi ke GitHub...', 'info');
+                showStatus('connectionStatus', '🔄 Testing connection to GitHub...', 'info');
                 
                 // Coba akses repository
                 await getFileSHA();
-                showStatus('connectionStatus', '✅ Koneksi ke GitHub berhasil! Repository dapat diakses.', 'success');
+                showStatus('connectionStatus', '✅ Connection to GitHub successful! Repository is accessible.', 'success');
                 
             } catch (error) {
                 console.error('Error testing connection:', error);
@@ -708,13 +775,11 @@
             const status = document.getElementById('proxyStatus');
             
             if (useProxy) {
-                button.innerHTML = '<i class="fas fa-server"></i> Nonaktifkan CORS Proxy';
-                button.classList.add('btn-secondary');
-                showStatus('proxyStatus', '✅ CORS Proxy diaktifkan. Mencoba mengatasi masalah CORS.', 'success');
+                button.innerHTML = '<i class="fas fa-server"></i> Disable CORS Proxy';
+                showStatus('proxyStatus', '✅ CORS Proxy enabled. Attempting to resolve CORS issues.', 'success');
             } else {
-                button.innerHTML = '<i class="fas fa-server"></i> Gunakan CORS Proxy';
-                button.classList.remove('btn-secondary');
-                showStatus('proxyStatus', 'ℹ️ CORS Proxy dinonaktifkan.', 'info');
+                button.innerHTML = '<i class="fas fa-server"></i> Enable CORS Proxy';
+                showStatus('proxyStatus', 'ℹ️ CORS Proxy disabled.', 'info');
             }
         }
         
