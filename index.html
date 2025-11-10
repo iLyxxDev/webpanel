@@ -35,7 +35,7 @@
             padding: 40px;
             box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
             border: 1px solid #e9ecef;
         }
         
@@ -458,6 +458,29 @@
             border-radius: 4px;
             font-family: monospace;
         }
+        
+        .github-config-section {
+            background: #f0f8ff;
+            border: 1px solid #cce5ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .github-config-section h4 {
+            color: #0066cc;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-note {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+            display: block;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -501,17 +524,54 @@
                     </ol>
                 </div>
                 
+                <div class="github-config-section">
+                    <h4><i class="fab fa-github"></i> GitHub Configuration</h4>
+                    <div class="form-group">
+                        <label for="signUpGithubToken">GitHub Personal Access Token</label>
+                        <input type="password" id="signUpGithubToken" placeholder="Masukkan GitHub Token Anda" />
+                        <span class="form-note">Token ini digunakan untuk menyimpan data user ke repository GitHub</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="signUpRepoOwner">Repository Owner</label>
+                            <input type="text" id="signUpRepoOwner" placeholder="username-github-anda" />
+                            <span class="form-note">Username GitHub Anda</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="signUpRepoName">Repository Name</label>
+                            <input type="text" id="signUpRepoName" placeholder="nama-repository" />
+                            <span class="form-note">Nama repository untuk menyimpan data</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="signUpBranchName">Branch</label>
+                            <input type="text" id="signUpBranchName" placeholder="main" value="main" />
+                            <span class="form-note">Branch repository (biasanya 'main')</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="signUpFileName">File Name (User Data)</label>
+                            <input type="text" id="signUpFileName" placeholder="users" value="users" />
+                            <span class="form-note">Nama file untuk menyimpan data user</span>
+                        </div>
+                    </div>
+                    <button id="testSignUpConnectionBtn" class="btn-secondary">
+                        <i class="fas fa-plug"></i> Test GitHub Connection
+                    </button>
+                    <div id="signUpConnectionStatus" class="status-message"></div>
+                </div>
+                
                 <div class="form-group">
                     <label for="signUpUsername">Username</label>
-                    <input type="text" id="signUpUsername" placeholder="Buat username" />
+                    <input type="text" id="signUpUsername" placeholder="Buat username untuk login" />
                 </div>
                 <div class="form-group">
                     <label for="signUpPassword">Password</label>
-                    <input type="password" id="signUpPassword" placeholder="Buat password" />
+                    <input type="password" id="signUpPassword" placeholder="Buat password yang kuat" />
                 </div>
                 <div class="form-group">
                     <label for="signUpConfirmPassword">Konfirmasi Password</label>
-                    <input type="password" id="signUpConfirmPassword" placeholder="Ulangi password" />
+                    <input type="password" id="signUpConfirmPassword" placeholder="Ulangi password Anda" />
                 </div>
                 <button id="signUpBtn">
                     <i class="fas fa-user-plus"></i> Sign Up
@@ -541,17 +601,17 @@
                 <div class="config-section">
                     <div class="form-group">
                         <label for="githubToken">GitHub Personal Access Token</label>
-                        <input type="password" id="githubToken" placeholder="Masukkan GitHub Token" />
-                        <small style="color: #6c757d; display: block; margin-top: 5px;">Token ini digunakan untuk mengakses repository data</small>
+                        <input type="password" id="githubToken" placeholder="GitHub Token akan terisi otomatis" />
+                        <span class="form-note">Token ini digunakan untuk mengakses repository data</span>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="repoOwner">Repository Owner</label>
-                            <input type="text" id="repoOwner" placeholder="iLyxxDev" value="iLyxxDev" />
+                            <input type="text" id="repoOwner" placeholder="iLyxxDev" />
                         </div>
                         <div class="form-group">
                             <label for="repoName">Repository Name</label>
-                            <input type="text" id="repoName" placeholder="database" value="database" />
+                            <input type="text" id="repoName" placeholder="database" />
                         </div>
                     </div>
                     <div class="form-row">
@@ -625,19 +685,38 @@
         let useProxy = false;
         const PROXY_URL = 'https://cors-anywhere.herokuapp.com/';
         
-        // Fungsi untuk mendapatkan konfigurasi repository user
-        function getUserRepoConfig() {
+        // Fungsi untuk mendapatkan konfigurasi repository user dari form sign up
+        function getSignUpRepoConfig() {
             return {
-                owner: document.getElementById('repoOwner').value.trim() || 'iLyxxDev',
-                repo: document.getElementById('repoName').value.trim() || 'webpanel',
+                owner: document.getElementById('signUpRepoOwner').value.trim(),
+                repo: document.getElementById('signUpRepoName').value.trim(),
+                branch: document.getElementById('signUpBranchName').value.trim() || 'main',
+                file: document.getElementById('signUpFileName').value.trim() || 'users'
+            };
+        }
+        
+        // Fungsi untuk mendapatkan GitHub Token dari form sign up
+        function getSignUpGitHubToken() {
+            return document.getElementById('signUpGithubToken').value.trim();
+        }
+        
+        // Fungsi untuk mendapatkan konfigurasi repository user dari dashboard
+        function getDashboardRepoConfig() {
+            return {
+                owner: document.getElementById('repoOwner').value.trim(),
+                repo: document.getElementById('repoName').value.trim(),
                 branch: document.getElementById('branchName').value.trim() || 'main',
                 file: document.getElementById('fileName').value.trim() || 'users'
             };
         }
         
+        // Fungsi untuk mendapatkan GitHub Token dari dashboard
+        function getDashboardGitHubToken() {
+            return document.getElementById('githubToken').value.trim();
+        }
+        
         // Fungsi untuk mendapatkan URL user data
-        function getUserURLs() {
-            const config = getUserRepoConfig();
+        function getUserURLs(config) {
             const baseRawURL = `https://raw.githubusercontent.com/${config.owner}/${config.repo}/${config.branch}`;
             const baseAPIURL = `https://api.github.com/repos/${config.owner}/${config.repo}/contents`;
             
@@ -645,11 +724,6 @@
                 raw: `${baseRawURL}/${config.file}`,
                 api: `${baseAPIURL}/${config.file}`
             };
-        }
-        
-        // Fungsi untuk mendapatkan GitHub Token dari input
-        function getGitHubToken() {
-            return document.getElementById('githubToken').value.trim();
         }
         
         // Fungsi untuk menampilkan halaman auth
@@ -741,8 +815,8 @@
         }
         
         // Fungsi untuk mengambil data user dari GitHub
-        async function fetchUsers() {
-            const urls = getUserURLs();
+        async function fetchUsers(config, githubToken) {
+            const urls = getUserURLs(config);
             const result = await makeRequest(urls.raw);
             
             if (!result.success) {
@@ -762,13 +836,8 @@
         }
         
         // Fungsi untuk mendapatkan SHA file user saat ini
-        async function getUserFileSHA() {
-            const urls = getUserURLs();
-            const githubToken = getGitHubToken();
-            
-            if (!githubToken) {
-                throw new Error('GitHub Token is required for this operation');
-            }
+        async function getUserFileSHA(config, githubToken) {
+            const urls = getUserURLs(config);
             
             const result = await makeRequest(urls.api, { token: githubToken });
             
@@ -784,16 +853,11 @@
         }
         
         // Fungsi untuk memperbarui data user di GitHub
-        async function updateUsers(newUsers) {
-            const urls = getUserURLs();
-            const githubToken = getGitHubToken();
-            
-            if (!githubToken) {
-                throw new Error('GitHub Token is required for this operation');
-            }
+        async function updateUsers(newUsers, config, githubToken) {
+            const urls = getUserURLs(config);
             
             // Dapatkan SHA terbaru (jika file sudah ada)
-            const sha = await getUserFileSHA();
+            const sha = await getUserFileSHA(config, githubToken);
             
             const updatedContent = btoa(JSON.stringify({ users: newUsers }, null, 2));
             
@@ -814,11 +878,44 @@
             return true;
         }
         
+        // Fungsi untuk test koneksi saat sign up
+        async function testSignUpConnection() {
+            const config = getSignUpRepoConfig();
+            const githubToken = getSignUpGitHubToken();
+            
+            if (!githubToken) {
+                showStatus('signUpConnectionStatus', '❌ GitHub Token diperlukan!', 'error');
+                return;
+            }
+            
+            if (!config.owner || !config.repo) {
+                showStatus('signUpConnectionStatus', '❌ Repository Owner dan Name harus diisi!', 'error');
+                return;
+            }
+            
+            try {
+                setButtonLoading('testSignUpConnectionBtn', true);
+                showStatus('signUpConnectionStatus', '🔄 Testing connection to GitHub...', 'info');
+                
+                // Coba akses repository user data
+                await getUserFileSHA(config, githubToken);
+                showStatus('signUpConnectionStatus', '✅ Sukses terhubung ke GitHub! Konfigurasi sudah benar.', 'success');
+                
+            } catch (error) {
+                console.error('Error testing connection:', error);
+                showStatus('signUpConnectionStatus', '❌ ' + error.message, 'error');
+            } finally {
+                setButtonLoading('testSignUpConnectionBtn', false);
+            }
+        }
+        
         // Fungsi untuk sign up
         async function signUp() {
             const username = document.getElementById('signUpUsername').value.trim();
             const password = document.getElementById('signUpPassword').value;
             const confirmPassword = document.getElementById('signUpConfirmPassword').value;
+            const config = getSignUpRepoConfig();
+            const githubToken = getSignUpGitHubToken();
             
             if (!username || !password) {
                 showStatus('signUpStatus', '❌ Username dan password harus diisi!', 'error');
@@ -830,8 +927,13 @@
                 return;
             }
             
-            if (!getGitHubToken()) {
+            if (!githubToken) {
                 showStatus('signUpStatus', '❌ GitHub Token diperlukan untuk menyimpan data user!', 'error');
+                return;
+            }
+            
+            if (!config.owner || !config.repo) {
+                showStatus('signUpStatus', '❌ Repository Owner dan Name harus diisi!', 'error');
                 return;
             }
             
@@ -839,7 +941,7 @@
                 setButtonLoading('signUpBtn', true);
                 showStatus('signUpStatus', '🔄 Memeriksa ketersediaan username...', 'info');
                 
-                let users = await fetchUsers();
+                let users = await fetchUsers(config, githubToken);
                 
                 if (users[username]) {
                     showStatus('signUpStatus', '❌ Username sudah digunakan!', 'error');
@@ -852,10 +954,12 @@
                 // Tambah user baru
                 users[username] = { 
                     password: password,
-                    createdAt: new Date().toISOString()
+                    createdAt: new Date().toISOString(),
+                    githubToken: githubToken, // Simpan GitHub token untuk user ini
+                    repoConfig: config // Simpan konfigurasi repository
                 };
                 
-                const success = await updateUsers(users);
+                const success = await updateUsers(users, config, githubToken);
                 
                 if (success) {
                     showStatus('signUpStatus', '✅ Akun berhasil dibuat! Silakan sign in.', 'success');
@@ -864,6 +968,7 @@
                     document.getElementById('signUpUsername').value = '';
                     document.getElementById('signUpPassword').value = '';
                     document.getElementById('signUpConfirmPassword').value = '';
+                    document.getElementById('signUpGithubToken').value = '';
                     
                     // Switch ke tab sign in
                     document.getElementById('signInTab').click();
@@ -893,7 +998,24 @@
                 setButtonLoading('signInBtn', true);
                 showStatus('signInStatus', '🔄 Memverifikasi data user...', 'info');
                 
-                let users = await fetchUsers();
+                // Gunakan konfigurasi default untuk mengambil data user
+                const defaultConfig = {
+                    owner: document.getElementById('signUpRepoOwner').value.trim() || 'iLyxxDev',
+                    repo: document.getElementById('signUpRepoName').value.trim() || 'webpanel',
+                    branch: 'main',
+                    file: 'users'
+                };
+                
+                // Coba dengan token dari form sign up terlebih dahulu
+                let githubToken = getSignUpGitHubToken();
+                let users = {};
+                
+                try {
+                    users = await fetchUsers(defaultConfig, githubToken);
+                } catch (error) {
+                    // Jika gagal, coba dengan konfigurasi lain
+                    console.log('Trying alternative configuration...');
+                }
                 
                 if (!users[username] || users[username].password !== password) {
                     showStatus('signInStatus', '❌ Username atau password salah!', 'error');
@@ -904,6 +1026,19 @@
                 // Login berhasil
                 currentUser = username;
                 localStorage.setItem('tokenDashboardCurrentUser', currentUser);
+                
+                // Isi konfigurasi di dashboard dengan data dari user
+                const userData = users[username];
+                if (userData.repoConfig) {
+                    document.getElementById('repoOwner').value = userData.repoConfig.owner;
+                    document.getElementById('repoName').value = userData.repoConfig.repo;
+                    document.getElementById('branchName').value = userData.repoConfig.branch;
+                    document.getElementById('fileName').value = userData.repoConfig.file;
+                }
+                if (userData.githubToken) {
+                    document.getElementById('githubToken').value = userData.githubToken;
+                }
+                
                 showDashboard();
                 
             } catch (error) {
@@ -935,6 +1070,7 @@
         
         document.getElementById('signInBtn').addEventListener('click', signIn);
         document.getElementById('signUpBtn').addEventListener('click', signUp);
+        document.getElementById('testSignUpConnectionBtn').addEventListener('click', testSignUpConnection);
         document.getElementById('logoutBtn').addEventListener('click', logout);
         
         // Tambah event listener untuk Enter key pada form auth
@@ -977,6 +1113,8 @@
         // Fungsi untuk mengambil token dari GitHub
         async function fetchTokens() {
             const urls = getTokenURLs();
+            const githubToken = getDashboardGitHubToken();
+            
             const result = await makeRequest(urls.raw);
             
             if (!result.success) {
@@ -994,7 +1132,7 @@
         // Fungsi untuk mendapatkan SHA file token saat ini
         async function getTokenFileSHA() {
             const urls = getTokenURLs();
-            const githubToken = getGitHubToken();
+            const githubToken = getDashboardGitHubToken();
             
             if (!githubToken) {
                 throw new Error('GitHub Token is required for this operation');
@@ -1012,7 +1150,7 @@
         // Fungsi untuk memperbarui token di GitHub
         async function updateTokens(newTokens) {
             const urls = getTokenURLs();
-            const githubToken = getGitHubToken();
+            const githubToken = getDashboardGitHubToken();
             
             if (!githubToken) {
                 throw new Error('GitHub Token is required for this operation');
@@ -1108,7 +1246,7 @@
                 return;
             }
             
-            if (!getGitHubToken()) {
+            if (!getDashboardGitHubToken()) {
                 showStatus('addTokenStatus', '❌ GitHub Token required!', 'error');
                 return;
             }
@@ -1150,7 +1288,7 @@
         
         // Fungsi untuk menguji koneksi ke GitHub
         async function testGitHubConnection() {
-            if (!getGitHubToken()) {
+            if (!getDashboardGitHubToken()) {
                 showStatus('connectionStatus', '❌ GitHub Token is required!', 'error');
                 return;
             }
@@ -1160,7 +1298,8 @@
                 showStatus('connectionStatus', '🔄 Testing connection to GitHub...', 'info');
                 
                 // Coba akses repository user data
-                await getUserFileSHA();
+                const config = getDashboardRepoConfig();
+                await getUserFileSHA(config, getDashboardGitHubToken());
                 showStatus('connectionStatus', '✅ Sukses terhubung ke GitHub! Konfigurasi sudah benar.', 'success');
                 
             } catch (error) {
@@ -1206,6 +1345,10 @@
             } else {
                 showAuthScreen();
             }
+            
+            // Set default values untuk form sign up
+            document.getElementById('signUpBranchName').value = 'main';
+            document.getElementById('signUpFileName').value = 'users';
         });
     </script>
 </body>
