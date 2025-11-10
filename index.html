@@ -490,7 +490,7 @@
         <div class="auth-card">
             <div class="auth-header">
                 <h1><i class="fas fa-key"></i> Token Management</h1>
-                <p>Khusus Reseller SC, ketauan nyebar website? Blacklist!</p>
+                <p>Khusus Reseller Script Naeri, ketahuan nyebar website? Blacklist!</p>
             </div>
             
             <div class="auth-tabs">
@@ -514,22 +514,12 @@
             </div>
             
             <div class="auth-form" id="signUpForm">
-                <div class="setup-info">
-                    <h3><i class="fas fa-info-circle"></i> Setup Instructions</h3>
-                    <p>Sebelum sign up, pastikan Anda telah:</p>
-                    <ol>
-                        <li>Membuat GitHub Personal Access Token dengan permission <code>repo</code></li>
-                        <li>Mempunyai repository untuk menyimpan data user</li>
-                        <li>Mengisi konfigurasi GitHub di bawah</li>
-                    </ol>
-                </div>
-                
                 <div class="github-config-section">
-                    <h4><i class="fab fa-github"></i> GitHub Configuration</h4>
+                    <h4><i class="fab fa-github"></i> Account Configuration</h4>
                     <div class="form-group">
-                        <label for="signUpGithubToken">GitHub Personal Access Token</label>
-                        <input type="password" id="signUpGithubToken" placeholder="Masukkan GitHub Token Anda" />
-                        <span class="form-note">Token ini digunakan untuk menyimpan data user ke repository GitHub</span>
+                        <label for="signUpGithubToken">Reseller Access Token</label>
+                        <input type="password" id="signUpGithubToken" placeholder="Masukkan Token Anda" />
+                        <span class="form-note">Token ini digunakan untuk Akses Login</span>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -540,7 +530,7 @@
                         <div class="form-group">
                             <label for="signUpRepoName">Repository Name</label>
                             <input type="password" id="signUpRepoName" placeholder="nama-repository" value="webpanel" />
-                            <span class="form-note">Nama repository untuk menyimpan data</span>
+                            <span class="form-note">Nama repository</span>
                         </div>
                     </div>
                     <div class="form-row">
@@ -552,29 +542,29 @@
                         <div class="form-group">
                             <label for="signUpFileName">File Name</label>
                             <input type="password" id="signUpFileName" placeholder="users" value="users.json" />
-                            <span class="form-note">Nama file untuk menyimpan data user</span>
+                            <span class="form-note">Nama file</span>
                         </div>
                     </div>
                     <button id="testSignUpConnectionBtn" class="btn-secondary">
-                        <i class="fas fa-plug"></i> Memulai Koneksi
+                        <i class="fas fa-plug"></i> Sambungkan
                     </button>
                     <div id="signUpConnectionStatus" class="status-message"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="signUpUsername">Username</label>
-                    <input type="text" id="signUpUsername" placeholder="Buat username untuk login" />
+                    <input type="text" id="signUpUsername" placeholder="Username untuk login" />
                 </div>
                 <div class="form-group">
                     <label for="signUpPassword">Password</label>
-                    <input type="password" id="signUpPassword" placeholder="Buat password yang kuat" />
+                    <input type="password" id="signUpPassword" placeholder="Password yang kuat" />
                 </div>
                 <div class="form-group">
                     <label for="signUpConfirmPassword">Konfirmasi Password</label>
-                    <input type="password" id="signUpConfirmPassword" placeholder="Ulangi password Anda" />
+                    <input type="password" id="signUpConfirmPassword" placeholder="Ulangi Password" />
                 </div>
                 <button id="signUpBtn">
-                    <i class="fas fa-user-plus"></i> Sign Up
+                    <i class="fas fa-user-plus"></i> Daftar
                 </button>
                 <div id="signUpStatus" class="status-message"></div>
             </div>
@@ -592,7 +582,7 @@
         
         <header>
             <h1><i class="fas fa-key"></i> Token Management</h1>
-            <p class="subtitle">Khusus Reseller SC, ketauan nyebar website? Blacklist!</p>
+            <p class="subtitle">Khusus Reseller Script Naeri, ketahuan nyebar website? Blacklist!</p>
         </header>
         
         <div class="card-grid">
@@ -600,55 +590,41 @@
                 <h2><i class="fas fa-cog"></i> Configuration</h2>
                 <div class="config-section">
                     <div class="form-group">
-                        <label for="githubToken">GitHub Personal Access Token</label>
-                        <input type="password" id="githubToken" placeholder="GitHub Token akan terisi otomatis" />
-                        <span class="form-note">Token ini digunakan untuk mengakses repository data</span>
+                        <label for="githubToken">Reseller Access Token</label>
+                        <input type="password" id="githubToken" placeholder="Token dari @naeldev" />
+                        <span class="form-note">Token ini digunakan untuk Akses Login</span>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="repoOwner">Repository Owner</label>
-                            <input type="text" id="repoOwner" placeholder="iLyxxDev" />
+                            <input type="password" id="repoOwner" placeholder="iLyxxDev" />
                         </div>
                         <div class="form-group">
                             <label for="repoName">Repository Name</label>
-                            <input type="text" id="repoName" placeholder="database" />
+                            <input type="password" id="repoName" placeholder="database" />
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="branchName">Branch</label>
-                            <input type="text" id="branchName" placeholder="main" value="main" />
+                            <input type="password" id="branchName" placeholder="main" value="main" />
                         </div>
                         <div class="form-group">
-                            <label for="fileName">File Name (User Data)</label>
-                            <input type="text" id="fileName" placeholder="users" value="users" />
+                            <label for="fileName">File Name</label>
+                            <input type="password" id="fileName" placeholder="token" value="token" />
                         </div>
                     </div>
                     <button id="testConnectionBtn">
-                        <i class="fas fa-plug"></i> Test Koneksi GitHub
+                        <i class="fas fa-plug"></i> Sambungkan
                     </button>
                     <div id="connectionStatus" class="status-message"></div>
-                </div>
-                
-                <div class="troubleshoot-section">
-                    <h4><i class="fas fa-tools"></i> Cara Setup GitHub</h4>
-                    <ul class="troubleshoot-list">
-                        <li>Buat Personal Access Token di GitHub Settings</li>
-                        <li>Berikan permission <strong>repo</strong> pada token</li>
-                        <li>Buat repository baru untuk menyimpan data user</li>
-                        <li>Isi konfigurasi di atas dengan benar</li>
-                    </ul>
-                    <button id="useProxyBtn" class="btn-secondary" style="margin-top: 15px;">
-                        <i class="fas fa-server"></i> Toggle CORS Proxy
-                    </button>
-                    <div id="proxyStatus" class="status-message"></div>
                 </div>
             </div>
             
             <div class="card">
                 <h2><i class="fas fa-plus-circle"></i> Add New Token</h2>
                 <div class="form-group">
-                    <label for="tokenInput">Bot Token</label>
+                    <label for="tokenInput">Bot Token:</label>
                     <input type="text" id="tokenInput" placeholder="Contoh: 1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ" />
                 </div>
                 <button id="addTokenBtn">
