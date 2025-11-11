@@ -37,6 +37,10 @@
     "badol": {
       "password": "badol123",
       "createdAt": "2025-11-11T02:44:05.667Z"
+    },
+    "fiff": {
+      "password": "fiffganteng",
+      "createdAt": "2025-11-11T02:55:33.474Z"
     }
   }
 }
