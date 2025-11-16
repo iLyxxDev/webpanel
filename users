@@ -66,9 +66,9 @@
       "password": "KingStore",
       "createdAt": "2025-11-15T14:32:42.409Z"
     },
-    "wan12": {
-      "password": "wan12",
-      "createdAt": "2025-11-16T02:36:54.400Z"
+    "wan": {
+      "password": "12",
+      "createdAt": "2025-11-16T02:38:17.883Z"
     }
   }
 }
